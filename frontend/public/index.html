@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bartender Journal</title>
+    <link rel="icon" href="data:," />
+    <style>
+      :root {
+        --bg: #070a12;
+        --panel: rgba(255, 255, 255, 0.06);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.62);
+        --border: rgba(255, 255, 255, 0.12);
+        --accent: #ffcc66;
+        --danger: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: radial-gradient(1100px 600px at 70% -10%, rgba(255, 204, 102, 0.18), transparent 55%),
+          radial-gradient(900px 600px at 20% 0%, rgba(106, 170, 255, 0.14), transparent 45%),
+          var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .container { max-width: 1060px; margin: 0 auto; padding: 24px; }
+      .nav {
+        display: flex; gap: 14px; align-items: center; justify-content: space-between;
+        border: 1px solid var(--border); background: rgba(0,0,0,0.25);
+        backdrop-filter: blur(10px); border-radius: 14px; padding: 14px 16px;
+        position: sticky; top: 14px; z-index: 10;
+      }
+      .brand { display: flex; align-items: baseline; gap: 10px; }
+      .brand h1 { font-size: 16px; margin: 0; letter-spacing: 0.2px; }
+      .brand span { font-size: 12px; color: var(--muted); }
+      .navlinks { display: flex; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+      .navlinks a {
+        color: var(--muted);
+        padding: 6px 10px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+      }
+      .navlinks a:hover { color: var(--text); border-color: var(--border); background: rgba(255,255,255,0.04); }
+
+      .hero { padding: 44px 0 22px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; }
+      .hero h2 { margin: 0 0 10px; font-size: 40px; letter-spacing: -0.02em; }
+      .hero p { margin: 0; color: var(--muted); line-height: 1.5; }
+      .card {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.22);
+        padding: 8px 10px;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .stack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr; }
+        .grid { grid-template-columns: 1fr; }
+      }
+
+      .section-title { margin: 32px 0 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .form-row-1 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+      .input, select, textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.25);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        outline: none;
+      }
+      textarea { resize: vertical; min-height: 92px; }
+      label { font-size: 12px; color: var(--muted); display: block; margin: 0 0 6px; }
+      button {
+        border: 1px solid var(--border);
+        background: rgba(255, 204, 102, 0.14);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      button:hover { background: rgba(255, 204, 102, 0.18); }
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
+      .danger { border-color: rgba(255, 107, 107, 0.35); background: rgba(255, 107, 107, 0.12); }
+
+      .feed { display: grid; gap: 14px; }
+      .post-head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+      .post-meta { color: var(--muted); font-size: 12px; }
+      .post-title { margin: 0; font-size: 16px; }
+      .post-body { margin: 8px 0 0; color: rgba(255,255,255,0.88); line-height: 1.5; white-space: pre-wrap; }
+      .post-image { margin-top: 10px; border-radius: 14px; width: 100%; border: 1px solid var(--border); }
+      .post-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+      .post-actions .muted { color: var(--muted); font-size: 12px; }
+      .comments { margin-top: 12px; display: none; }
+      .comment { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.18); }
+      .comment + .comment { margin-top: 10px; }
+      .comment .meta { color: var(--muted); font-size: 12px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 10px; }
+
+      .toast {
+        position: fixed; bottom: 16px; right: 16px;
+        border: 1px solid var(--border); background: rgba(0,0,0,0.45);
+        color: var(--text); padding: 10px 12px; border-radius: 12px;
+        max-width: 420px; display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">
+          <h1>Bartender Journal</h1>
+          <span id="envBadge">local</span>
+        </div>
+        <div class="navlinks">
+          <a href="#wall">Wall</a>
+          <a href="#library">Library</a>
+          <a href="#about">About</a>
+        </div>
+      </div>
+
+      <div class="hero" id="about">
+        <div class="card">
+          <div class="pill">DevOps resume portfolio • FastAPI • Postgres • Kubernetes (minikube)</div>
+          <h2>Run a living bartender wall.</h2>
+          <p>
+            A public journal where anyone can post a note, link, or photo and the community can comment.
+            Built to be production-shaped (auth optional, Postgres persistence, K8s manifests).
+          </p>
+          <div class="stack">
+            <div class="pill">FastAPI</div>
+            <div class="pill">PostgreSQL</div>
+            <div class="pill">Alembic</div>
+            <div class="pill">JWT (optional)</div>
+            <div class="pill">Minikube</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title" style="margin-top:0;">API</div>
+          <div class="post-meta">This UI talks to:</div>
+          <div style="margin-top:10px; display:flex; gap:10px;">
+            <input class="input" id="apiBase" placeholder="http://MINIKUBE_IP:30001" />
+            <button id="saveApiBase">Save</button>
+          </div>
+          <div class="post-meta" style="margin-top:10px;">
+            Tip: when running in minikube with NodePort, use the backend service URL.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card" id="wall">
+          <div class="section-title" style="margin-top:0;">New post</div>
+          <div class="form-row">
+            <div>
+              <label>Type</label>
+              <select id="postType">
+                <option value="text" selected>text</option>
+                <option value="link">link</option>
+                <option value="photo">photo</option>
+              </select>
+            </div>
+            <div>
+              <label>Your name (optional)</label>
+              <input class="input" id="postAuthor" placeholder="Guest" maxlength="80" />
+            </div>
+          </div>
+          <div class="form-row-1" style="margin-top:12px;">
+            <div>
+              <label>Title (optional)</label>
+              <input class="input" id="postTitle" placeholder="e.g. Shift notes, new syrup, bar story…" maxlength="140" />
+            </div>
+            <div id="postBodyWrap">
+              <label>Body</label>
+              <textarea id="postBody" placeholder="Write something…"></textarea>
+            </div>
+            <div id="postLinkWrap" style="display:none;">
+              <label>Link URL</label>
+              <input class="input" id="postLink" placeholder="https://..." />
+            </div>
+            <div id="postPhotoWrap" style="display:none;">
+              <label>Image URL</label>
+              <input class="input" id="postImage" placeholder="https://...jpg" />
+            </div>
+            <button id="submitPost">Post to wall</button>
+            <div class="post-meta">Public posting is enabled. (Add rate limits/moderation later.)</div>
+          </div>
+        </div>
+
+        <div class="card" id="library">
+          <div class="section-title" style="margin-top:0;">Library</div>
+          <div class="post-meta">MVP library endpoints (seeded by API):</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button data-library="recipes">Recipes</button>
+            <button data-library="places">Places</button>
+            <button data-library="history">History</button>
+          </div>
+          <div id="libraryOut" style="margin-top:12px; color: var(--muted); font-size: 13px; line-height:1.5;"></div>
+        </div>
+      </div>
+
+      <div class="section-title">Wall feed</div>
+      <div id="feed" class="feed"></div>
+      <div style="display:flex; justify-content:center; padding: 18px 0 50px;">
+        <button id="loadMore">Load more</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const state = {
+        apiBase: localStorage.getItem("apiBase") || "",
+        nextCursor: null,
+        loading: false,
+      };
+
+      const el = (id) => document.getElementById(id);
+      const toastEl = el("toast");
+
+      function toast(msg, danger = false) {
+        toastEl.textContent = msg;
+        toastEl.classList.toggle("danger", danger);
+        toastEl.style.display = "block";
+        setTimeout(() => (toastEl.style.display = "none"), 2400);
+      }
+
+      function api(url) {
+        const base = state.apiBase.replace(/\/$/, "");
+        return base ? `${base}${url}` : url;
+      }
+
+      async function fetchJson(url, opts) {
+        const res = await fetch(url, { headers: { "content-type": "application/json" }, ...opts });
+        if (!res.ok) {
+          const t = await res.text().catch(() => "");
+          throw new Error(`HTTP ${res.status} ${t}`);
+        }
+        return await res.json();
+      }
+
+      function fmtTs(iso) {
+        try { return new Date(iso).toLocaleString(); } catch { return iso; }
+      }
+
+      function setPostType(type) {
+        el("postBodyWrap").style.display = type === "text" ? "block" : "none";
+        el("postLinkWrap").style.display = type === "link" ? "block" : "none";
+        el("postPhotoWrap").style.display = type === "photo" ? "block" : "none";
+      }
+
+      function postCard(p) {
+        const wrap = document.createElement("div");
+        wrap.className = "card";
+        wrap.dataset.postId = p.id;
+
+        const title = p.title ? `<h3 class="post-title">${escapeHtml(p.title)}</h3>` : `<h3 class="post-title">${escapeHtml(p.type)}</h3>`;
+        const author = p.author_name || "Guest";
+        const link = p.link_url ? `<div style="margin-top:10px;"><a href="${escapeAttr(p.link_url)}" target="_blank" rel="noreferrer">${escapeHtml(p.link_url)}</a></div>` : "";
+        const body = p.body ? `<div class="post-body">${escapeHtml(p.body)}</div>` : "";
+        const img = p.image_url ? `<img class="post-image" src="${escapeAttr(p.image_url)}" alt="post image" loading="lazy" />` : "";
+
+        wrap.innerHTML = `
+          <div class="post-head">
+            <div>
+              ${title}
+              <div class="post-meta">by ${escapeHtml(author)} • ${fmtTs(p.created_at)}</div>
+            </div>
+            <div class="post-meta">${p.comment_count} comments</div>
+          </div>
+          ${body}
+          ${link}
+          ${img}
+          <div class="post-actions">
+            <button class="toggleComments">Comments</button>
+            <div class="muted">Add one, or just lurk.</div>
+          </div>
+          <div class="comments">
+            <div class="form-row" style="margin-top:10px;">
+              <div>
+                <label>Your name (optional)</label>
+                <input class="input commentAuthor" placeholder="Guest" maxlength="80" />
+              </div>
+              <div>
+                <label>Comment</label>
+                <input class="input commentBody" placeholder="Write a comment…" maxlength="5000" />
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+              <button class="submitComment">Post comment</button>
+              <button class="refreshComments">Refresh</button>
+            </div>
+            <div class="commentList" style="margin-top:12px;"></div>
+          </div>
+        `;
+        return wrap;
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+      }
+      function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
+
+      async function loadFeed(reset = false) {
+        if (state.loading) return;
+        state.loading = true;
+        el("loadMore").disabled = true;
+        try {
+          const qs = new URLSearchParams({ limit: "10" });
+          if (!reset && state.nextCursor) qs.set("cursor", state.nextCursor);
+          const data = await fetchJson(api(`/posts?${qs.toString()}`));
+          if (reset) el("feed").innerHTML = "";
+          data.items.forEach((p) => el("feed").appendChild(postCard(p)));
+          state.nextCursor = data.next_cursor || null;
+          el("loadMore").style.display = state.nextCursor ? "inline-block" : "none";
+        } catch (e) {
+          toast(`Feed error: ${e.message}. Set API base URL first.`, true);
+        } finally {
+          state.loading = false;
+          el("loadMore").disabled = false;
+        }
+      }
+
+      async function submitPost() {
+        const type = el("postType").value;
+        const author_name = el("postAuthor").value.trim() || null;
+        const title = el("postTitle").value.trim() || null;
+        const body = el("postBody").value.trim() || null;
+        const link_url = el("postLink").value.trim() || null;
+        const image_url = el("postImage").value.trim() || null;
+
+        const payload = { type, title, body, link_url, image_url, author_name };
+        try {
+          el("submitPost").disabled = true;
+          await fetchJson(api("/posts"), { method: "POST", body: JSON.stringify(payload) });
+          el("postBody").value = "";
+          el("postLink").value = "";
+          el("postImage").value = "";
+          toast("Posted.");
+          await loadFeed(true);
+        } catch (e) {
+          toast(`Post error: ${e.message}`, true);
+        } finally {
+          el("submitPost").disabled = false;
+        }
+      }
+
+      async function loadLibrary(which) {
+        try {
+          el("libraryOut").textContent = "Loading…";
+          const data = await fetchJson(api(`/library/${which}`));
+          el("libraryOut").innerHTML = `<pre style="margin:0; white-space: pre-wrap;">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+        } catch (e) {
+          el("libraryOut").textContent = `Error: ${e.message}`;
+        }
+      }
+
+      async function fetchComments(postId) {
+        return await fetchJson(api(`/posts/${postId}/comments`));
+      }
+
+      async function renderComments(postEl) {
+        const postId = postEl.dataset.postId;
+        const list = postEl.querySelector(".commentList");
+        list.innerHTML = `<div class="post-meta">Loading…</div>`;
+        try {
+          const comments = await fetchComments(postId);
+          if (!comments.length) {
+            list.innerHTML = `<div class="post-meta">No comments yet.</div>`;
+            return;
+          }
+          list.innerHTML = "";
+          comments.forEach((c) => {
+            const item = document.createElement("div");
+            item.className = "comment";
+            item.innerHTML = `
+              <div class="meta">
+                <div>${escapeHtml(c.author_name || "Guest")}</div>
+                <div>${fmtTs(c.created_at)}</div>
+              </div>
+              <div>${escapeHtml(c.body)}</div>
+            `;
+            list.appendChild(item);
+          });
+        } catch (e) {
+          list.innerHTML = `<div class="post-meta" style="color: var(--danger);">Error: ${escapeHtml(e.message)}</div>`;
+        }
+      }
+
+      async function submitComment(postEl) {
+        const postId = postEl.dataset.postId;
+        const author = postEl.querySelector(".commentAuthor").value.trim() || null;
+        const body = postEl.querySelector(".commentBody").value.trim();
+        if (!body) return toast("Comment body required.", true);
+
+        const btn = postEl.querySelector(".submitComment");
+        btn.disabled = true;
+        try {
+          await fetchJson(api(`/posts/${postId}/comments`), {
+            method: "POST",
+            body: JSON.stringify({ author_name: author, body }),
+          });
+          postEl.querySelector(".commentBody").value = "";
+          toast("Comment posted.");
+          await renderComments(postEl);
+          await loadFeed(true);
+        } catch (e) {
+          toast(`Comment error: ${e.message}`, true);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      // wire up
+      el("apiBase").value = state.apiBase;
+      el("saveApiBase").addEventListener("click", () => {
+        state.apiBase = el("apiBase").value.trim();
+        localStorage.setItem("apiBase", state.apiBase);
+        toast("Saved API base URL.");
+        loadFeed(true);
+      });
+
+      el("postType").addEventListener("change", (e) => setPostType(e.target.value));
+      el("submitPost").addEventListener("click", submitPost);
+      el("loadMore").addEventListener("click", () => loadFeed(false));
+      document.querySelectorAll("button[data-library]").forEach((b) => b.addEventListener("click", () => loadLibrary(b.dataset.library)));
+
+      el("feed").addEventListener("click", async (e) => {
+        const postEl = e.target.closest(".card");
+        if (!postEl) return;
+        if (e.target.classList.contains("toggleComments")) {
+          const c = postEl.querySelector(".comments");
+          c.style.display = c.style.display === "block" ? "none" : "block";
+          if (c.style.display === "block") await renderComments(postEl);
+        }
+        if (e.target.classList.contains("refreshComments")) await renderComments(postEl);
+        if (e.target.classList.contains("submitComment")) await submitComment(postEl);
+      });
+
+      // start
+      setPostType(el("postType").value);
+      loadFeed(true);
+    </script>
+  </body>
+</html>
+
