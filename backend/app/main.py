@@ -11,6 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import desc, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.db import get_db
 from app.models import Comment, Post, PostType, User
@@ -116,7 +117,12 @@ async def list_posts(
 ) -> CursorPage:
     limit = max(1, min(limit, 50))
 
-    q = select(Post).order_by(desc(Post.created_at), desc(Post.id)).limit(limit + 1)
+    q = (
+        select(Post)
+        .options(selectinload(Post.author))
+        .order_by(desc(Post.created_at), desc(Post.id))
+        .limit(limit + 1)
+    )
     if cursor:
         (created_at, post_id) = decode_cursor(cursor)
         # Fetch strictly older than cursor (created_at,id) tuple.
@@ -204,7 +210,10 @@ async def create_post(
 @app.get("/posts/{post_id}/comments", response_model=list[CommentResponse])
 async def list_comments(post_id: uuid.UUID, db: AsyncSession = Depends(get_db)) -> list[CommentResponse]:
     result = await db.execute(
-        select(Comment).where(Comment.post_id == post_id).order_by(Comment.created_at.asc(), Comment.id.asc())
+        select(Comment)
+        .options(selectinload(Comment.author))
+        .where(Comment.post_id == post_id)
+        .order_by(Comment.created_at.asc(), Comment.id.asc())
     )
     comments = result.scalars().all()
     return [

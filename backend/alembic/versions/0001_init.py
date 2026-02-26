@@ -29,13 +29,6 @@ def upgrade() -> None:
     )
     op.create_index("ix_users_email", "users", ["email"], unique=True)
     op.create_index("ix_users_username", "users", ["username"], unique=True)
-
-#    post_type = sa.Enum("text", "link", "photo", name="post_type")
-#    post_type.create(op.get_bind(), checkfirst=True)
-
-
-#    from sqlalchemy.dialects import postgresql
-
     post_type = postgresql.ENUM(
         "text",
         "link",
@@ -43,12 +36,7 @@ def upgrade() -> None:
         name="post_type",
         create_type=False,
     )
-
-# Create enum safely
     post_type.create(op.get_bind(), checkfirst=True)
-
-##
-
     op.create_table(
         "posts",
         sa.Column("id", sa.dialects.postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
