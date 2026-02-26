@@ -13,7 +13,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db import get_db
+from app.db import engine, get_db
+from app.cache import cache_get_json, cache_set_json
 from app.models import Comment, Post, PostType, User
 from app.schemas import (
     AuthLoginRequest,
@@ -117,6 +118,13 @@ async def list_posts(
 ) -> CursorPage:
     limit = max(1, min(limit, 50))
 
+    # Very small cache window for hot feed queries
+    cache_key = f"posts:limit={limit}:cursor={cursor or ''}"
+    cached = await cache_get_json(cache_key)
+    if cached is not None:
+        # Pydantic will coerce this back into the proper model
+        return CursorPage(**cached)
+
     q = (
         select(Post)
         .options(selectinload(Post.author))
@@ -162,7 +170,10 @@ async def list_posts(
     ]
 
     next_cursor = encode_cursor(posts[-1].created_at, posts[-1].id) if has_more and posts else None
-    return CursorPage(items=items, next_cursor=next_cursor)
+    page = CursorPage(items=items, next_cursor=next_cursor)
+    # Cache for a few seconds to smooth bursts; we don't do fine-grained invalidation yet.
+    await cache_set_json(cache_key, page.model_dump(mode="json"), ttl_seconds=5)
+    return page
 
 
 @app.post("/posts", response_model=PostResponse, status_code=201)
@@ -262,27 +273,48 @@ async def create_comment(
 # “Library” endpoints (MVP: static seed data; later: tables + CRUD)
 @app.get("/library/recipes", response_model=list[Recipe])
 async def recipes() -> list[Recipe]:
-    return [
+    cache_key = "library:recipes"
+    cached = await cache_get_json(cache_key)
+    if cached is not None:
+        return [Recipe(**item) for item in cached]
+
+    data = [
         Recipe(id="old-fashioned", title="Old Fashioned", tags=["classic", "whiskey"]),
         Recipe(id="negroni", title="Negroni", tags=["classic", "gin"]),
         Recipe(id="daiquiri", title="Daiquiri", tags=["rum", "sour"]),
     ]
+    await cache_set_json(cache_key, [r.model_dump(mode="json") for r in data], ttl_seconds=60)
+    return data
 
 
 @app.get("/library/places", response_model=list[Place])
 async def places() -> list[Place]:
-    return [
+    cache_key = "library:places"
+    cached = await cache_get_json(cache_key)
+    if cached is not None:
+        return [Place(**item) for item in cached]
+
+    data = [
         Place(id="favorite-local", name="Your Favorite Local", city="(add city)"),
         Place(id="hotel-bar", name="A Great Hotel Bar", city="(add city)"),
     ]
+    await cache_set_json(cache_key, [p.model_dump(mode="json") for p in data], ttl_seconds=60)
+    return data
 
 
 @app.get("/library/history", response_model=list[HistoryEntry])
 async def history() -> list[HistoryEntry]:
-    return [
+    cache_key = "library:history"
+    cached = await cache_get_json(cache_key)
+    if cached is not None:
+        return [HistoryEntry(**item) for item in cached]
+
+    data = [
         HistoryEntry(id="ice", title="Why ice quality matters"),
         HistoryEntry(id="bitters", title="Bitters: the bartender’s spice rack"),
     ]
+    await cache_set_json(cache_key, [h.model_dump(mode="json") for h in data], ttl_seconds=60)
+    return data
 
 
 @app.middleware("http")

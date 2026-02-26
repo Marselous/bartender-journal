@@ -10,3 +10,10 @@ passlib[argon2]==1.7.4
 python-multipart==0.0.20
 httpx==0.28.1
 email-validator==2.3.0
+redis
+celery
+sqladmin
+prometheus-fastapi-instrumentator
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation-fastapi
