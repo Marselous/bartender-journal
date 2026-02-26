@@ -52,6 +52,10 @@ minikube ip
 
 Open the frontend and paste the backend URL into the “API” box, click **Save**, then post to the wall.
 
+### Troubleshooting: "No route to host" when saving API URL
+
+The API URL must be reachable **from the machine where the browser runs**. Same machine as minikube: use `http://$(minikube ip):30001`. Remote/SSH: use the host your browser can reach, or `http://localhost:30001` if you use SSH port-forwarding. Ensure the backend pod is running: `kubectl -n bartender get pods`. After changing the URL, click **Save**; the app pings `/healthz` and shows a clear message.
+
 ### Quick API test (curl)
 Replace `<IP>` with `minikube ip`.
 

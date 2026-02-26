@@ -254,6 +254,15 @@
         return await res.json();
       }
 
+      async function checkApiReachable() {
+        const url = api("/healthz");
+        if (!url.startsWith("http")) return { ok: false, error: "Enter a valid API base URL (e.g. http://HOST:30001)" };
+        const res = await fetch(url, { method: "GET" });
+        if (!res.ok) return { ok: false, error: `API returned ${res.status}` };
+        const data = await res.json().catch(() => ({}));
+        return data.ok ? { ok: true } : { ok: false, error: "Invalid health response" };
+      }
+
       function fmtTs(iso) {
         try { return new Date(iso).toLocaleString(); } catch { return iso; }
       }
@@ -428,11 +437,35 @@
 
       // wire up
       el("apiBase").value = state.apiBase;
-      el("saveApiBase").addEventListener("click", () => {
-        state.apiBase = el("apiBase").value.trim();
+      el("saveApiBase").addEventListener("click", async () => {
+        const url = el("apiBase").value.trim();
+        state.apiBase = url;
         localStorage.setItem("apiBase", state.apiBase);
-        toast("Saved API base URL.");
-        loadFeed(true);
+
+        if (!url) {
+          toast("Saved. Enter the API URL (e.g. http://minikube-ip:30001) and click Save to connect.", false);
+          return;
+        }
+
+        const btn = el("saveApiBase");
+        btn.disabled = true;
+        try {
+          const result = await checkApiReachable();
+          if (result.ok) {
+            toast("API connected. Loading feed…");
+            await loadFeed(true);
+          } else {
+            toast("Cannot reach API: " + (result.error || "No route to host") + ". Is the backend running? Use the URL your browser can reach (e.g. http://minikube-ip:30001 or http://localhost:30001 if port-forwarding).", true);
+          }
+        } catch (e) {
+          const msg = e.message || String(e);
+          const hint = msg.includes("Failed to fetch") || msg.includes("Load failed") || msg.includes("NetworkError")
+            ? " Backend unreachable from this browser—check URL, firewall, and that the server is running."
+            : "";
+          toast("Cannot reach API." + hint + " (" + msg + ")", true);
+        } finally {
+          btn.disabled = false;
+        }
       });
 
       el("postType").addEventListener("change", (e) => setPostType(e.target.value));
@@ -454,7 +487,9 @@
 
       // start
       setPostType(el("postType").value);
-      loadFeed(true);
+      if (state.apiBase && state.apiBase.startsWith("http")) {
+        loadFeed(true);
+      }
     </script>
   </body>
 </html>
