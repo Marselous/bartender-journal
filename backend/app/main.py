@@ -42,6 +42,18 @@ from app.settings import settings
 
 app = FastAPI(title=settings.app_name)
 
+# --- Prometheus metrics ---
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
+
+# --- OpenTelemetry ---
+resource = Resource.create({"service.name": "bartender-journal-api"})
+trace_provider = TracerProvider(resource=resource)
+trace_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+trace.set_tracer_provider(trace_provider)
+FastAPIInstrumentor.instrument_app(app, tracer_provider=trace_provider)
+
+
 resource = Resource.create({"service.name": "bartender-journal-api"})
 trace_provider = TracerProvider(resource=resource)
 trace_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
@@ -127,10 +139,10 @@ async def healthz() -> dict:
     return {"ok": True, "ts": _now_utc().isoformat()}
 
 
-@app.on_event("startup")
-async def _startup_instrumentation() -> None:
-    # Prometheus metrics at /metrics
-    instrumentator.instrument(app).expose(app)
+# @app.on_event("startup")
+# async def _startup_instrumentation() -> None:
+#     # Prometheus metrics at /metrics
+#     instrumentator.instrument(app).expose(app)
 
 
 @app.post("/auth/register", response_model=AuthTokenResponse, status_code=201)
