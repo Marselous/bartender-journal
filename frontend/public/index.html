@@ -47,6 +47,9 @@
       }
       .navlinks a:hover { color: var(--text); border-color: var(--border); background: rgba(255,255,255,0.04); }
 
+      .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      #userBadge { font-size: 12px; color: var(--muted); }
+
       .hero { padding: 44px 0 22px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; }
       .hero h2 { margin: 0 0 10px; font-size: 40px; letter-spacing: -0.02em; }
       .hero p { margin: 0; color: var(--muted); line-height: 1.5; }
@@ -111,6 +114,42 @@
       .comment + .comment { margin-top: 10px; }
       .comment .meta { color: var(--muted); font-size: 12px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 10px; }
 
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 20;
+      }
+      .modal.active { display: flex; }
+      .modal-inner {
+        max-width: 360px;
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        padding: 16px;
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .modal-title {
+        font-size: 16px;
+        margin: 0;
+      }
+      .modal-close {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        padding: 4px 6px;
+        border-radius: 999px;
+      }
+
       .toast {
         position: fixed; bottom: 16px; right: 16px;
         border: 1px solid var(--border); background: rgba(0,0,0,0.45);
@@ -130,6 +169,11 @@
           <a href="#wall">Wall</a>
           <a href="#library">Library</a>
           <a href="#about">About</a>
+        </div>
+        <div class="nav-actions">
+          <span id="userBadge" class="post-meta">Guest</span>
+          <button id="openRegister">Register</button>
+          <button id="openLogin">Sign in</button>
         </div>
       </div>
 
@@ -223,9 +267,55 @@
 
     <div id="toast" class="toast"></div>
 
+    <div id="registerModal" class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h3 class="modal-title">Register</h3>
+          <button class="modal-close" data-close-modal="registerModal">✕</button>
+        </div>
+        <div class="form-row-1">
+          <div>
+            <label>Email</label>
+            <input class="input" id="regEmail" type="email" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label>Username</label>
+            <input class="input" id="regUsername" placeholder="bartender_name" />
+          </div>
+          <div>
+            <label>Password</label>
+            <input class="input" id="regPassword" type="password" />
+          </div>
+          <button id="submitRegister">Create account</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h3 class="modal-title">Sign in</h3>
+          <button class="modal-close" data-close-modal="loginModal">✕</button>
+        </div>
+        <div class="form-row-1">
+          <div>
+            <label>Username</label>
+            <input class="input" id="loginUsername" placeholder="bartender_name" />
+          </div>
+          <div>
+            <label>Password</label>
+            <input class="input" id="loginPassword" type="password" />
+          </div>
+          <button id="submitLogin">Sign in</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       const state = {
         apiBase: localStorage.getItem("apiBase") || "",
+        token: localStorage.getItem("token") || "",
+        currentUsername: localStorage.getItem("username") || "",
         nextCursor: null,
         loading: false,
       };
@@ -245,8 +335,24 @@
         return base ? `${base}${url}` : url;
       }
 
-      async function fetchJson(url, opts) {
-        const res = await fetch(url, { headers: { "content-type": "application/json" }, ...opts });
+      function updateUserBadge() {
+        const badge = el("userBadge");
+        if (!badge) return;
+        if (state.token && state.currentUsername) {
+          badge.textContent = `Signed in as ${state.currentUsername}`;
+        } else if (state.token) {
+          badge.textContent = "Signed in";
+        } else {
+          badge.textContent = "Guest";
+        }
+      }
+
+      async function fetchJson(url, opts = {}) {
+        const headers = { "content-type": "application/json", ...(opts.headers || {}) };
+        if (state.token) {
+          headers["Authorization"] = `Bearer ${state.token}`;
+        }
+        const res = await fetch(url, { ...opts, headers });
         if (!res.ok) {
           const t = await res.text().catch(() => "");
           throw new Error(`HTTP ${res.status} ${t}`);
@@ -435,6 +541,68 @@
         }
       }
 
+      function openModal(id) {
+        const m = document.getElementById(id);
+        if (m) m.classList.add("active");
+      }
+
+      function closeModal(id) {
+        const m = document.getElementById(id);
+        if (m) m.classList.remove("active");
+      }
+
+      async function submitRegister() {
+        const email = el("regEmail").value.trim();
+        const username = el("regUsername").value.trim();
+        const password = el("regPassword").value;
+        if (!email || !username || !password) {
+          toast("Email, username and password are required.", true);
+          return;
+        }
+        const btn = el("submitRegister");
+        btn.disabled = true;
+        try {
+          await fetchJson(api("/auth/register"), {
+            method: "POST",
+            body: JSON.stringify({ email, username, password }),
+          });
+          toast("Registered. Now sign in.", false);
+          closeModal("registerModal");
+        } catch (e) {
+          toast(`Register error: ${e.message}`, true);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      async function submitLogin() {
+        const username = el("loginUsername").value.trim();
+        const password = el("loginPassword").value;
+        if (!username || !password) {
+          toast("Username and password required.", true);
+          return;
+        }
+        const btn = el("submitLogin");
+        btn.disabled = true;
+        try {
+          const data = await fetchJson(api("/auth/login"), {
+            method: "POST",
+            body: JSON.stringify({ username, password }),
+          });
+          state.token = data.access_token;
+          state.currentUsername = username;
+          localStorage.setItem("token", state.token);
+          localStorage.setItem("username", state.currentUsername);
+          updateUserBadge();
+          toast("Signed in.", false);
+          closeModal("loginModal");
+        } catch (e) {
+          toast(`Login error: ${e.message}`, true);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
       // wire up
       el("apiBase").value = state.apiBase;
       el("saveApiBase").addEventListener("click", async () => {
@@ -471,6 +639,21 @@
       el("postType").addEventListener("change", (e) => setPostType(e.target.value));
       el("submitPost").addEventListener("click", submitPost);
       el("loadMore").addEventListener("click", () => loadFeed(false));
+      el("openRegister").addEventListener("click", () => openModal("registerModal"));
+      el("openLogin").addEventListener("click", () => openModal("loginModal"));
+      el("submitRegister").addEventListener("click", submitRegister);
+      el("submitLogin").addEventListener("click", submitLogin);
+      document.querySelectorAll(".modal-close").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-close-modal");
+          if (id) closeModal(id);
+        });
+      });
+      document.querySelectorAll(".modal").forEach((m) => {
+        m.addEventListener("click", (e) => {
+          if (e.target === m) m.classList.remove("active");
+        });
+      });
       document.querySelectorAll("button[data-library]").forEach((b) => b.addEventListener("click", () => loadLibrary(b.dataset.library)));
 
       el("feed").addEventListener("click", async (e) => {
@@ -487,6 +670,7 @@
 
       // start
       setPostType(el("postType").value);
+      updateUserBadge();
       if (state.apiBase && state.apiBase.startsWith("http")) {
         loadFeed(true);
       }
