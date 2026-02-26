@@ -8,10 +8,18 @@ from datetime import datetime, timezone
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from prometheus_fastapi_instrumentator import Instrumentator
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from sqlalchemy import desc, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from sqladmin import Admin, ModelView
 
 from app.db import engine, get_db
 from app.cache import cache_get_json, cache_set_json
@@ -34,6 +42,12 @@ from app.settings import settings
 
 app = FastAPI(title=settings.app_name)
 
+resource = Resource.create({"service.name": "bartender-journal-api"})
+trace_provider = TracerProvider(resource=resource)
+trace_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+trace.set_tracer_provider(trace_provider)
+FastAPIInstrumentor.instrument_app(app, tracer_provider=trace_provider)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -43,6 +57,32 @@ app.add_middleware(
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+
+
+class UserAdmin(ModelView, model=User):
+    column_list = [User.id, User.email, User.username, User.created_at]
+    column_searchable_list = [User.email, User.username]
+    column_sortable_list = [User.created_at]
+
+
+class PostAdmin(ModelView, model=Post):
+    column_list = [Post.id, Post.created_at, Post.type, Post.title, Post.author_id]
+    column_searchable_list = [Post.title, Post.body]
+    column_sortable_list = [Post.created_at]
+
+
+class CommentAdmin(ModelView, model=Comment):
+    column_list = [Comment.id, Comment.post_id, Comment.created_at, Comment.author_id]
+    column_searchable_list = [Comment.body]
+    column_sortable_list = [Comment.created_at]
+
+
+admin = Admin(app, engine)
+admin.add_view(UserAdmin)
+admin.add_view(PostAdmin)
+admin.add_view(CommentAdmin)
+
+instrumentator = Instrumentator()
 
 
 def _now_utc() -> datetime:
@@ -85,6 +125,12 @@ async def get_optional_user(
 @app.get("/healthz")
 async def healthz() -> dict:
     return {"ok": True, "ts": _now_utc().isoformat()}
+
+
+@app.on_event("startup")
+async def _startup_instrumentation() -> None:
+    # Prometheus metrics at /metrics
+    instrumentator.instrument(app).expose(app)
 
 
 @app.post("/auth/register", response_model=AuthTokenResponse, status_code=201)

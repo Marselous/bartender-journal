@@ -8,4 +8,6 @@ resources:
   - postgres.yaml
   - backend.yaml
   - frontend.yaml
+  - redis.yaml
+  - worker.yaml
 
