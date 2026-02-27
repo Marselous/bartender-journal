@@ -93,3 +93,62 @@ curl -X POST "http://<IP>:30001/posts/<POST_ID>/comments" \
 - Turn “library” into real tables + CRUD + admin UI
 - Add observability: metrics + traces + dashboards
 
+### Observability stack (Prometheus + Grafana on minikube)
+This branch now includes Kubernetes manifests for Prometheus and Grafana:
+
+- **Prometheus** NodePort: `30090`
+- **Grafana** NodePort: `30300` (default login `admin/admin`)
+
+Deploy (or update) with:
+
+```bash
+kubectl apply -k k8s/
+kubectl -n bartender rollout status deploy/prometheus
+kubectl -n bartender rollout status deploy/grafana
+```
+
+Open services:
+
+```bash
+minikube service -n bartender prometheus --url
+minikube service -n bartender grafana --url
+```
+
+Grafana is pre-provisioned with:
+- a Prometheus datasource (`http://prometheus:9090`)
+- a starter dashboard: **Bartender Journal API Overview**
+
+### Data collection tasks (3 scheduled tasks)
+Three `CronJob` tasks are included to continuously generate dataset samples for dashboards:
+
+1. `task-read-latency` (every 2 min): hits `/posts` and `/healthz` repeatedly.
+2. `task-write-throughput` (every 3 min): sends repeated `POST /posts` requests.
+3. `task-metrics-snapshot` (every 4 min): pulls `/metrics` sample lines.
+
+Useful commands:
+
+```bash
+kubectl -n bartender get cronjobs
+kubectl -n bartender get jobs --sort-by=.metadata.creationTimestamp
+kubectl -n bartender logs job/<latest-job-name>
+```
+
+### Continuous traffic generator
+A dedicated deployment (`traffic-generator`) emulates mixed production workflow:
+- reads hot endpoints (`/healthz`, `/posts`)
+- creates posts (`text/link/photo`)
+- adds comments on newest posts
+
+Check status/logs:
+
+```bash
+kubectl -n bartender rollout status deploy/traffic-generator
+kubectl -n bartender logs deploy/traffic-generator --tail=100
+```
+
+You can also run the same logic locally with:
+
+```bash
+python scripts/traffic_generator.py
+```
+(override base URL with `API_BASE=http://<MINIKUBE_IP>:30001`).
