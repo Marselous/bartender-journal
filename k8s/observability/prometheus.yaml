@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: bartender
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    rule_files:
+      - /etc/prometheus/rules/*.yml
+
+    scrape_configs:
+      - job_name: prometheus
+        static_configs:
+          - targets: ["localhost:9090"]
+
+      - job_name: bartender-backend
+        metrics_path: /metrics
+        static_configs:
+          - targets: ["backend:8000"]
+
+  alerts.yml: |
+    groups:
+      - name: bartender-alerts
+        rules:
+          - alert: BartenderBackendDown
+            expr: up{job="bartender-backend"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Bartender backend is down"
+              description: "Prometheus cannot scrape backend:8000 /metrics for more than 1 minute."
+
+          - alert: BartenderHigh5xxErrorRate
+            expr: |
+              (
+                sum(rate(http_requests_total{job="bartender-backend",status=~"5.."}[5m]))
+                /
+                clamp_min(sum(rate(http_requests_total{job="bartender-backend"}[5m])), 0.01)
+              ) > 0.05
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High 5xx error rate"
+              description: "5xx responses are above 5% for at least 5 minutes."
+
+          - alert: BartenderHighP95Latency
+            expr: |
+              histogram_quantile(
+                0.95,
+                sum(rate(http_request_duration_seconds_bucket{job="bartender-backend"}[5m])) by (le)
+              ) > 0.8
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High p95 latency"
+              description: "p95 request latency is above 800ms for 5 minutes."
+
+          - alert: BartenderLowFeedCacheHitRatio
+            expr: |
+              (
+                sum(rate(bartender_feed_cache_requests_total{outcome="hit"}[10m]))
+                /
+                clamp_min(sum(rate(bartender_feed_cache_requests_total[10m])), 0.01)
+              ) < 0.30
+            for: 10m
+            labels:
+              severity: info
+            annotations:
+              summary: "Low feed cache hit ratio"
+              description: "Feed cache hit ratio is below 30% for 10 minutes."
+
+          - alert: BartenderNoPostCreation
+            expr: increase(bartender_posts_created_total[30m]) < 1
+            for: 30m
+            labels:
+              severity: info
+            annotations:
+              summary: "No posts created recently"
+              description: "No posts were created in the last 30 minutes."
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: bartender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.55.1
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--web.enable-lifecycle"
+          ports:
+            - name: http
+              containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: rules
+              mountPath: /etc/prometheus/rules
+            - name: data
+              mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+            items:
+              - key: prometheus.yml
+                path: prometheus.yml
+        - name: rules
+          configMap:
+            name: prometheus-config
+            items:
+              - key: alerts.yml
+                path: alerts.yml
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: bartender
+spec:
+  type: NodePort
+  selector:
+    app: prometheus
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+      nodePort: 30090

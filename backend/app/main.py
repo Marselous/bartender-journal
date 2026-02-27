@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import base64
 import json
+import time
 import uuid
 from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from prometheus_client import Counter, Histogram
 from prometheus_fastapi_instrumentator import Instrumentator
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -54,12 +56,6 @@ trace.set_tracer_provider(trace_provider)
 FastAPIInstrumentor.instrument_app(app, tracer_provider=trace_provider)
 
 
-resource = Resource.create({"service.name": "bartender-journal-api"})
-trace_provider = TracerProvider(resource=resource)
-trace_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
-trace.set_tracer_provider(trace_provider)
-FastAPIInstrumentor.instrument_app(app, tracer_provider=trace_provider)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -94,7 +90,36 @@ admin.add_view(UserAdmin)
 admin.add_view(PostAdmin)
 admin.add_view(CommentAdmin)
 
-instrumentator = Instrumentator()
+# --- App-level business metrics ---
+POSTS_CREATED = Counter(
+    "bartender_posts_created",
+    "Number of posts created",
+    labelnames=("type",),
+)
+COMMENTS_CREATED = Counter(
+    "bartender_comments_created",
+    "Number of comments created",
+)
+AUTH_LOGINS = Counter(
+    "bartender_auth_logins",
+    "Authentication login attempts",
+    labelnames=("outcome",),
+)
+FEED_CACHE_REQUESTS = Counter(
+    "bartender_feed_cache_requests",
+    "Feed cache lookups",
+    labelnames=("outcome",),
+)
+POST_CREATE_SECONDS = Histogram(
+    "bartender_post_create_seconds",
+    "Post creation latency in seconds",
+    buckets=(0.01, 0.025, 0.05, 0.1, 0.2, 0.5, 1, 2, 5),
+)
+COMMENT_CREATE_SECONDS = Histogram(
+    "bartender_comment_create_seconds",
+    "Comment creation latency in seconds",
+    buckets=(0.01, 0.025, 0.05, 0.1, 0.2, 0.5, 1, 2, 5),
+)
 
 
 def _now_utc() -> datetime:
@@ -163,7 +188,9 @@ async def login(payload: AuthLoginRequest, db: AsyncSession = Depends(get_db)) -
     result = await db.execute(select(User).where(User.username == payload.username))
     user = result.scalar_one_or_none()
     if not user or not verify_password(payload.password, user.password_hash):
+        AUTH_LOGINS.labels(outcome="failure").inc()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    AUTH_LOGINS.labels(outcome="success").inc()
     token = create_access_token(str(user.id))
     return AuthTokenResponse(access_token=token)
 
@@ -180,8 +207,11 @@ async def list_posts(
     cache_key = f"posts:limit={limit}:cursor={cursor or ''}"
     cached = await cache_get_json(cache_key)
     if cached is not None:
+        FEED_CACHE_REQUESTS.labels(outcome="hit").inc()
         # Pydantic will coerce this back into the proper model
         return CursorPage(**cached)
+
+    FEED_CACHE_REQUESTS.labels(outcome="miss").inc()
 
     q = (
         select(Post)
@@ -259,9 +289,13 @@ async def create_post(
         author_id=user.id if user else None,
         author_name=None if user else author_name,
     )
+    started = time.perf_counter()
     db.add(post)
     await db.commit()
     await db.refresh(post)
+    post_type_value = post.type.value if isinstance(post.type, PostType) else str(post.type)
+    POSTS_CREATED.labels(type=post_type_value).inc()
+    POST_CREATE_SECONDS.observe(time.perf_counter() - started)
 
     return PostResponse(
         id=post.id,
@@ -316,9 +350,12 @@ async def create_comment(
         author_id=user.id if user else None,
         author_name=None if user else author_name,
     )
+    started = time.perf_counter()
     db.add(comment)
     await db.commit()
     await db.refresh(comment)
+    COMMENTS_CREATED.inc()
+    COMMENT_CREATE_SECONDS.observe(time.perf_counter() - started)
     return CommentResponse(
         id=comment.id,
         post_id=comment.post_id,
