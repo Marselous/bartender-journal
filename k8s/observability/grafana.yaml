@@ -47,64 +47,55 @@ data:
       "id": null,
       "uid": "bartender-overview",
       "title": "Bartender Journal API Overview",
-      "tags": ["fastapi", "portfolio", "sre"],
+      "tags": ["fastapi", "portfolio"],
       "schemaVersion": 39,
-      "version": 2,
+      "version": 1,
       "refresh": "10s",
-      "time": {"from": "now-30m", "to": "now"},
+      "time": {"from": "now-15m", "to": "now"},
       "panels": [
         {
           "type": "timeseries",
           "title": "Request Rate (req/s)",
-          "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
-          "targets": [{"expr": "sum(rate(http_requests_total{job=\"bartender-backend\"}[1m])) by (handler, method)", "legendFormat": "{{method}} {{handler}}"}]
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total[1m])) by (handler, method)",
+              "legendFormat": "{{method}} {{handler}}"
+            }
+          ]
         },
         {
           "type": "timeseries",
           "title": "p95 Latency (s)",
-          "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
-          "targets": [{"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"bartender-backend\"}[5m])) by (le, handler, method))", "legendFormat": "{{method}} {{handler}}"}]
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, handler, method))",
+              "legendFormat": "{{method}} {{handler}}"
+            }
+          ]
         },
         {
           "type": "timeseries",
-          "title": "5xx Error Rate (%)",
-          "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
-          "targets": [{"expr": "100 * sum(rate(http_requests_total{job=\"bartender-backend\",status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_requests_total{job=\"bartender-backend\"}[5m])), 0.01)", "legendFormat": "5xx rate"}]
+          "title": "5xx Errors (req/s)",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) by (handler)",
+              "legendFormat": "{{handler}}"
+            }
+          ]
         },
         {
           "type": "timeseries",
-          "title": "Posts Created / min",
-          "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
-          "targets": [{"expr": "sum(increase(bartender_posts_created_total[1m])) by (type)", "legendFormat": "{{type}}"}]
-        },
-        {
-          "type": "timeseries",
-          "title": "Comments Created / min",
-          "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
-          "targets": [{"expr": "sum(increase(bartender_comments_created_total[1m]))", "legendFormat": "comments"}]
-        },
-        {
-          "type": "timeseries",
-          "title": "Feed Cache Hit Ratio (%)",
-          "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
-          "targets": [{"expr": "100 * sum(rate(bartender_feed_cache_requests_total{outcome=\"hit\"}[5m])) / clamp_min(sum(rate(bartender_feed_cache_requests_total[5m])), 0.01)", "legendFormat": "hit ratio"}]
-        },
-        {
-          "type": "timeseries",
-          "title": "Login Attempts / min",
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
-          "targets": [{"expr": "sum(increase(bartender_auth_logins_total[1m])) by (outcome)", "legendFormat": "{{outcome}}"}]
-        },
-        {
-          "type": "stat",
-          "title": "Active Prometheus Alerts",
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
-          "targets": [{"expr": "sum(ALERTS{alertstate=\"firing\"})", "legendFormat": "firing"}],
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto"
-          }
+          "title": "Traffic by Status",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total[1m])) by (status)",
+              "legendFormat": "{{status}}"
+            }
+          ]
         }
       ]
     }
