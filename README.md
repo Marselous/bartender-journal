@@ -21,6 +21,20 @@ For a complete feature-by-feature explanation (architecture, what each feature d
 ### Prereqs (local machine)
 - `minikube`, `kubectl`, `docker`
 
+### One-command minikube init/deploy script
+You can bootstrap and deploy the full stack with:
+
+```bash
+./scripts/minikube_init.sh
+```
+
+This script will:
+- start minikube if it is down,
+- build backend/frontend images into minikube,
+- apply `k8s/` resources,
+- restart core deployments and wait for rollouts,
+- print service URLs when deployment succeeds.
+
 ### Run on minikube
 From `bartender-journal/`:
 
