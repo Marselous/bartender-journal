@@ -1,0 +1,171 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: bartender
+  labels:
+    grafana_datasource: "1"
+data:
+  datasource.yml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+        editable: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-provider
+  namespace: bartender
+data:
+  dashboards.yml: |
+    apiVersion: 1
+    providers:
+      - name: bartender
+        orgId: 1
+        folder: Bartender Journal
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-bartender
+  namespace: bartender
+  labels:
+    grafana_dashboard: "1"
+data:
+  bartender-overview.json: |
+    {
+      "id": null,
+      "uid": "bartender-overview",
+      "title": "Bartender Journal API Overview",
+      "tags": ["fastapi", "portfolio", "sre"],
+      "schemaVersion": 39,
+      "version": 2,
+      "refresh": "10s",
+      "time": {"from": "now-30m", "to": "now"},
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "Request Rate (req/s)",
+          "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+          "targets": [{"expr": "sum(rate(http_requests_total{job=\"bartender-backend\"}[1m])) by (handler, method)", "legendFormat": "{{method}} {{handler}}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "p95 Latency (s)",
+          "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+          "targets": [{"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"bartender-backend\"}[5m])) by (le, handler, method))", "legendFormat": "{{method}} {{handler}}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "5xx Error Rate (%)",
+          "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+          "targets": [{"expr": "100 * sum(rate(http_requests_total{job=\"bartender-backend\",status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_requests_total{job=\"bartender-backend\"}[5m])), 0.01)", "legendFormat": "5xx rate"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "Posts Created / min",
+          "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
+          "targets": [{"expr": "sum(increase(bartender_posts_created_total[1m])) by (type)", "legendFormat": "{{type}}"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "Comments Created / min",
+          "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+          "targets": [{"expr": "sum(increase(bartender_comments_created_total[1m]))", "legendFormat": "comments"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "Feed Cache Hit Ratio (%)",
+          "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
+          "targets": [{"expr": "100 * sum(rate(bartender_feed_cache_requests_total{outcome=\"hit\"}[5m])) / clamp_min(sum(rate(bartender_feed_cache_requests_total[5m])), 0.01)", "legendFormat": "hit ratio"}]
+        },
+        {
+          "type": "timeseries",
+          "title": "Login Attempts / min",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+          "targets": [{"expr": "sum(increase(bartender_auth_logins_total[1m])) by (outcome)", "legendFormat": "{{outcome}}"}]
+        },
+        {
+          "type": "stat",
+          "title": "Active Prometheus Alerts",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+          "targets": [{"expr": "sum(ALERTS{alertstate=\"firing\"})", "legendFormat": "firing"}],
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto"
+          }
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: bartender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:11.2.2
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: admin
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: admin
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+          volumeMounts:
+            - name: datasource
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboards-provider
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
+      volumes:
+        - name: datasource
+          configMap:
+            name: grafana-datasources
+        - name: dashboards-provider
+          configMap:
+            name: grafana-dashboards-provider
+        - name: dashboards
+          configMap:
+            name: grafana-dashboard-bartender
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: bartender
+spec:
+  type: NodePort
+  selector:
+    app: grafana
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      nodePort: 30300

@@ -10,4 +10,6 @@ resources:
   - frontend.yaml
   - redis.yaml
   - worker.yaml
-
+  - observability/prometheus.yaml
+  - observability/grafana.yaml
+  - load/traffic.yaml
