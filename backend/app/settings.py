@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://bartender:bartender@postgres:5432/bartender"
 
+    redis_url: str | None = "redis://redis:6379/0"
+
     jwt_secret_key: str = "dev-change-me"
     jwt_algorithm: str = "HS256"
     jwt_access_token_expires_minutes: int = 60 * 24

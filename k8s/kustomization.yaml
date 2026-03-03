@@ -8,4 +8,8 @@ resources:
   - postgres.yaml
   - backend.yaml
   - frontend.yaml
-
+  - redis.yaml
+  - worker.yaml
+  - observability/prometheus.yaml
+  - observability/grafana.yaml
+  - load/traffic.yaml
