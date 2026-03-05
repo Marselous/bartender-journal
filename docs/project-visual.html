@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bartender Journal — Project Overview</title>
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --bg:      #07090f;
+      --panel:   rgba(255,255,255,0.06);
+      --border:  rgba(255,255,255,0.10);
+      --text:    rgba(255,255,255,0.93);
+      --muted:   rgba(255,255,255,0.50);
+      --gold:    #ffcc66;
+      --blue:    #6aaeff;
+      --purple:  #c084fc;
+      --green:   #4ade80;
+      --red:     #f87171;
+      --orange:  #fb923c;
+      --pink:    #f472b6;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(ellipse 1400px 700px at 80% -5%,  rgba(255,204,102,0.12), transparent 55%),
+        radial-gradient(ellipse  900px 600px at 10% 15%,  rgba(106,170,255,0.10), transparent 50%),
+        radial-gradient(ellipse  800px 600px at 50% 95%,  rgba(192,132,252,0.08), transparent 45%),
+        var(--bg);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Helpers ── */
+    .glass {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow: 0 4px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+    .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      padding: 4px 11px; border-radius: 999px;
+      font-size: 11px; color: var(--muted);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 16px; z-index: 100;
+      padding: 0 28px; max-width: 1100px; margin: 16px auto 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(7,9,15,0.7);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 13px 22px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand-name { font-size: 14px; font-weight: 600; }
+    .live-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.3);
+      padding: 3px 10px; border-radius: 999px; font-size: 11px; color: var(--green);
+    }
+    .pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-links a {
+      font-size: 13px; color: var(--muted); padding: 6px 13px;
+      border-radius: 10px; text-decoration: none;
+      transition: color .15s, background .15s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    /* ── HERO ── */
+    .hero { padding: 90px 0 70px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(255,204,102,0.25);
+      background: rgba(255,204,102,0.07);
+      padding: 6px 16px; border-radius: 999px;
+      font-size: 11px; color: var(--gold); letter-spacing: .08em;
+      margin-bottom: 28px;
+    }
+    .hero-title {
+      font-size: clamp(48px, 6.5vw, 78px);
+      font-weight: 700; letter-spacing: -.03em; line-height: 1.05;
+      background: linear-gradient(135deg, rgba(255,255,255,.96) 40%, rgba(255,204,102,.75) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 22px;
+    }
+    .hero-sub {
+      font-size: 17px; color: var(--muted); line-height: 1.7;
+      max-width: 560px; margin-bottom: 36px;
+    }
+    .hero-stats { display: flex; gap: 40px; flex-wrap: wrap; }
+    .stat-num { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ── SECTION TITLES ── */
+    .section { padding: 60px 0; }
+    .section-head { margin-bottom: 36px; }
+    .section-title {
+      font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px;
+    }
+    .section-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 500px; }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ─────────────────────────────────────────────────────
+       ARCHITECTURE DIAGRAM — SVG-based
+    ───────────────────────────────────────────────────── */
+    .arch-wrap {
+      position: relative; overflow-x: auto;
+    }
+    .arch-svg { width: 100%; max-width: 1060px; display: block; margin: 0 auto; }
+
+    /* ── TECH STACK GRID ── */
+    .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .stack-card {
+      padding: 20px 22px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      transition: border-color .2s, transform .2s, background .2s;
+      cursor: default;
+    }
+    .stack-card:hover {
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.07);
+      transform: translateY(-2px);
+    }
+    .stack-icon { font-size: 26px; margin-bottom: 10px; }
+    .stack-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .stack-role { font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .stack-ver { font-size: 11px; color: var(--muted); margin-top: 8px; opacity: .65; }
+
+    /* ── API ENDPOINTS TABLE ── */
+    .api-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .api-table th {
+      text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--muted); padding: 10px 14px; border-bottom: 1px solid var(--border);
+    }
+    .api-table td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+    .api-table tr:last-child td { border-bottom: none; }
+    .api-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .method {
+      font-size: 10px; font-weight: 700; letter-spacing: .06em;
+      padding: 3px 9px; border-radius: 6px; white-space: nowrap;
+    }
+    .GET    { background: rgba(74,222,128,.15);  color: var(--green); }
+    .POST   { background: rgba(106,170,255,.15); color: var(--blue);  }
+    .path   { font-family: ui-monospace, monospace; color: var(--text); font-size: 12px; }
+    .desc   { color: var(--muted); }
+
+    /* ── SECURITY ── */
+    .security-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .sec-card { padding: 22px 24px; border-radius: 18px; }
+    .sec-icon { font-size: 22px; margin-bottom: 12px; }
+    .sec-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .sec-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .sec-code {
+      margin-top: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 13px;
+      font-family: ui-monospace, monospace; font-size: 11px; color: rgba(255,255,255,0.75);
+      white-space: pre; overflow-x: auto; line-height: 1.6;
+    }
+
+    /* ── MONITORING GRID ── */
+    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .metric-card { padding: 20px 22px; border-radius: 16px; }
+    .metric-name { font-family: ui-monospace, monospace; font-size: 12px; color: var(--gold); margin-bottom: 6px; }
+    .metric-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .metric-type {
+      display: inline-block; margin-top: 10px;
+      font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 4px;
+      background: rgba(255,204,102,.12); color: var(--gold); border: 1px solid rgba(255,204,102,.25);
+    }
+    .metric-type.hist { background: rgba(192,132,252,.12); color: var(--purple); border-color: rgba(192,132,252,.25); }
+
+    /* ── CACHE DIAGRAM ── */
+    .cache-flow { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; overflow-x: auto; }
+    .flow-box {
+      flex-shrink: 0;
+      padding: 14px 18px; border-radius: 14px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      text-align: center; min-width: 130px;
+    }
+    .flow-box .fb-icon { font-size: 20px; margin-bottom: 6px; }
+    .flow-box .fb-name { font-size: 12px; font-weight: 600; }
+    .flow-box .fb-sub  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .flow-arrow {
+      flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+      padding: 0 8px; gap: 2px;
+    }
+    .flow-arrow .fa-line { flex: 1; width: 40px; height: 2px; }
+    .flow-arrow .fa-label { font-size: 10px; color: var(--muted); white-space: nowrap; }
+    .arrow-svg { display: block; }
+
+    /* ── ROADMAP ── */
+    .roadmap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .rm-col-title {
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .rm-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .rm-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+      margin-bottom: 10px; font-size: 13px; line-height: 1.5;
+    }
+    .rm-num { font-size: 11px; color: var(--muted); min-width: 18px; font-weight: 600; margin-top: 1px; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      margin-top: 40px;
+    }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+    .footer-l { font-size: 13px; color: var(--muted); }
+    .footer-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 700px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+      .roadmap-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="nav-brand-name">Bartender Journal</span>
+      <div class="live-pill"><span class="pulse"></span>Live on Kubernetes</div>
+    </div>
+    <div class="nav-links">
+      <a href="#architecture">Architecture</a>
+      <a href="#stack">Stack</a>
+      <a href="#security">Security</a>
+      <a href="#monitoring">Monitoring</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ── HERO ────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-badge">&#x2728; DevOps Portfolio Project</div>
+    <h1 class="hero-title">Bartender Journal</h1>
+    <p class="hero-sub">
+      A production-shaped community board for bartenders. Async Python API,
+      PostgreSQL persistence, Redis caching, JWT auth, Celery workers,
+      Kubernetes deployment, and full observability — deployable in one command.
+    </p>
+    <div class="hero-stats">
+      <div><div class="stat-num" data-count="8">0</div><div class="stat-lbl">API Endpoints</div></div>
+      <div><div class="stat-num" data-count="9">0</div><div class="stat-lbl">K8s Workloads</div></div>
+      <div><div class="stat-num" data-count="6">0</div><div class="stat-lbl">Prometheus Metrics</div></div>
+      <div><div class="stat-num" data-count="3">0</div><div class="stat-lbl">DB Tables</div></div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── ARCHITECTURE ─────────────────────────────────────────────── -->
+  <section class="section" id="architecture">
+    <div class="section-head reveal">
+      <div class="label">System design</div>
+      <div class="section-title">Architecture overview</div>
+      <div class="section-sub">All internal services communicate via Kubernetes ClusterIP. Only four ports are exposed externally via NodePort.</div>
+    </div>
+
+    <!-- SVG Architecture Diagram -->
+    <div class="arch-wrap reveal">
+      <svg class="arch-svg" viewBox="0 0 1060 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0 0 L0 6 L8 3 z" fill="rgba(255,255,255,0.3)"/>
+          </marker>
+          <marker id="arr-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0 0 L0 6 L8 3 z" fill="#ffcc66"/>
+          </marker>
+          <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0 0 L0 6 L8 3 z" fill="#4ade80"/>
+          </marker>
+          <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0 0 L0 6 L8 3 z" fill="#6aaeff"/>
+          </marker>
+          <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0 0 L0 6 L8 3 z" fill="#c084fc"/>
+          </marker>
+          <filter id="glow-gold">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-blue">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ── Background zones ── -->
+        <!-- External zone -->
+        <rect x="10" y="10" width="200" height="540" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.07)" stroke-dasharray="6 4"/>
+        <text x="110" y="34" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.3)" letter-spacing="1" font-family="ui-sans-serif,system-ui">EXTERNAL</text>
+
+        <!-- Kubernetes zone -->
+        <rect x="224" y="10" width="620" height="540" rx="16" fill="rgba(106,170,255,0.03)" stroke="rgba(106,170,255,0.15)" stroke-dasharray="6 4"/>
+        <text x="534" y="34" text-anchor="middle" font-size="10" fill="rgba(106,170,255,0.5)" letter-spacing="1" font-family="ui-sans-serif,system-ui">KUBERNETES — namespace: bartender</text>
+
+        <!-- Observability zone -->
+        <rect x="858" y="10" width="192" height="540" rx="16" fill="rgba(192,132,252,0.03)" stroke="rgba(192,132,252,0.15)" stroke-dasharray="6 4"/>
+        <text x="954" y="34" text-anchor="middle" font-size="10" fill="rgba(192,132,252,0.5)" letter-spacing="1" font-family="ui-sans-serif,system-ui">OBSERVABILITY</text>
+
+        <!-- ── BROWSER ── -->
+        <rect x="24" y="50" width="172" height="72" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="110" y="80" text-anchor="middle" font-size="18" font-family="ui-sans-serif">🌐</text>
+        <text x="110" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Browser</text>
+        <text x="110" y="112" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)" font-family="ui-sans-serif">Vanilla JS</text>
+
+        <!-- ── FRONTEND ── -->
+        <rect x="246" y="50" width="164" height="72" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,204,102,0.35)"/>
+        <text x="328" y="80" text-anchor="middle" font-size="18" font-family="ui-sans-serif">⚡</text>
+        <text x="328" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Frontend</text>
+        <text x="328" y="112" text-anchor="middle" font-size="10" fill="rgba(255,204,102,0.8)" font-family="ui-sans-serif">NGINX · NodePort :30000</text>
+
+        <!-- Browser → Frontend -->
+        <path d="M196 86 L246 86" stroke="#ffcc66" stroke-width="1.5" marker-end="url(#arr-gold)" opacity=".7"/>
+        <text x="221" y="79" text-anchor="middle" font-size="9" fill="rgba(255,204,102,0.6)" font-family="ui-sans-serif">HTML</text>
+
+        <!-- ── BACKEND ── -->
+        <rect x="246" y="178" width="164" height="90" rx="12" fill="rgba(106,170,255,0.08)" stroke="rgba(106,170,255,0.4)" filter="url(#glow-blue)"/>
+        <text x="328" y="212" text-anchor="middle" font-size="18" font-family="ui-sans-serif">🚀</text>
+        <text x="328" y="230" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Backend API</text>
+        <text x="328" y="246" text-anchor="middle" font-size="10" fill="rgba(106,170,255,0.8)" font-family="ui-sans-serif">FastAPI · Uvicorn · :8000</text>
+        <text x="328" y="259" text-anchor="middle" font-size="10" fill="rgba(106,170,255,0.6)" font-family="ui-sans-serif">NodePort :30001</text>
+
+        <!-- Browser → Backend (JS fetch) -->
+        <path d="M110 122 L110 178 Q110 200 130 210 L246 217" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="155" y="192" font-size="9" fill="rgba(255,255,255,0.3)" font-family="ui-sans-serif">fetch()</text>
+
+        <!-- ── POSTGRESQL ── -->
+        <rect x="460" y="155" width="156" height="72" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(74,222,128,0.35)"/>
+        <text x="538" y="185" text-anchor="middle" font-size="18" font-family="ui-sans-serif">🗄️</text>
+        <text x="538" y="204" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">PostgreSQL 16</text>
+        <text x="538" y="218" text-anchor="middle" font-size="10" fill="rgba(74,222,128,0.7)" font-family="ui-sans-serif">StatefulSet · PVC 2Gi</text>
+
+        <!-- Backend → Postgres -->
+        <path d="M410 213 L460 191" stroke="rgba(74,222,128,0.5)" stroke-width="1.5" marker-end="url(#arr-green)"/>
+        <text x="435" y="196" text-anchor="middle" font-size="9" fill="rgba(74,222,128,0.5)" font-family="ui-sans-serif">asyncpg</text>
+
+        <!-- ── REDIS ── -->
+        <rect x="460" y="270" width="156" height="72" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(248,113,113,0.35)"/>
+        <text x="538" y="299" text-anchor="middle" font-size="18" font-family="ui-sans-serif">⚡</text>
+        <text x="538" y="318" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Redis 7</text>
+        <text x="538" y="332" text-anchor="middle" font-size="10" fill="rgba(248,113,113,0.7)" font-family="ui-sans-serif">Cache · Celery broker</text>
+
+        <!-- Backend → Redis -->
+        <path d="M410 235 L438 290 L460 306" stroke="rgba(248,113,113,0.5)" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="420" y="270" font-size="9" fill="rgba(248,113,113,0.5)" font-family="ui-sans-serif">cache/broker</text>
+
+        <!-- ── CELERY WORKER ── -->
+        <rect x="460" y="385" width="156" height="72" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(251,146,60,0.35)"/>
+        <text x="538" y="415" text-anchor="middle" font-size="18" font-family="ui-sans-serif">⚙️</text>
+        <text x="538" y="434" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Celery Worker</text>
+        <text x="538" y="448" text-anchor="middle" font-size="10" fill="rgba(251,146,60,0.7)" font-family="ui-sans-serif">background tasks</text>
+
+        <!-- Redis → Celery -->
+        <path d="M538 342 L538 385" stroke="rgba(251,146,60,0.5)" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="548" y="368" font-size="9" fill="rgba(251,146,60,0.5)" font-family="ui-sans-serif">queue</text>
+
+        <!-- ── MIGRATIONS init container note ── -->
+        <rect x="246" y="298" width="164" height="58" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 3"/>
+        <text x="328" y="320" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)" font-family="ui-sans-serif">Init Container</text>
+        <text x="328" y="337" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.35)" font-family="ui-sans-serif">Alembic migrations</text>
+        <text x="328" y="350" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.35)" font-family="ui-sans-serif">run before API starts</text>
+
+        <!-- Backend → InitContainer -->
+        <path d="M328 268 L328 298" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="4 3"/>
+
+        <!-- ── TRAFFIC GEN + CRONJOBS ── -->
+        <rect x="246" y="400" width="164" height="90" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(192,132,252,0.25)"/>
+        <text x="328" y="428" text-anchor="middle" font-size="14" font-family="ui-sans-serif">🤖</text>
+        <text x="328" y="446" text-anchor="middle" font-size="11" font-weight="600" fill="rgba(255,255,255,0.8)" font-family="ui-sans-serif">Load Generator</text>
+        <text x="328" y="461" text-anchor="middle" font-size="10" fill="rgba(192,132,252,0.7)" font-family="ui-sans-serif">Deployment + 3 CronJobs</text>
+        <text x="328" y="475" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.3)" font-family="ui-sans-serif">continuous mixed traffic</text>
+
+        <!-- LoadGen → Backend -->
+        <path d="M328 400 L328 268" stroke="rgba(192,132,252,0.35)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-purple)"/>
+
+        <!-- ── PROMETHEUS ── -->
+        <rect x="876" y="100" width="158" height="72" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(251,146,60,0.35)"/>
+        <text x="955" y="130" text-anchor="middle" font-size="18" font-family="ui-sans-serif">📊</text>
+        <text x="955" y="149" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Prometheus</text>
+        <text x="955" y="163" text-anchor="middle" font-size="10" fill="rgba(251,146,60,0.7)" font-family="ui-sans-serif">NodePort :30090</text>
+
+        <!-- Backend → Prometheus scrape -->
+        <path d="M680 213 Q810 213 876 136" stroke="rgba(251,146,60,0.4)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr)"/>
+        <text x="790" y="185" font-size="9" fill="rgba(251,146,60,0.5)" font-family="ui-sans-serif">scrape /metrics 15s</text>
+
+        <!-- ── GRAFANA ── -->
+        <rect x="876" y="220" width="158" height="72" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,204,102,0.35)"/>
+        <text x="955" y="250" text-anchor="middle" font-size="18" font-family="ui-sans-serif">📈</text>
+        <text x="955" y="269" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.9)" font-family="ui-sans-serif">Grafana</text>
+        <text x="955" y="283" text-anchor="middle" font-size="10" fill="rgba(255,204,102,0.7)" font-family="ui-sans-serif">NodePort :30300</text>
+
+        <!-- Prometheus → Grafana -->
+        <path d="M955 172 L955 220" stroke="rgba(255,204,102,0.4)" stroke-width="1.5" marker-end="url(#arr-gold)"/>
+        <text x="966" y="200" font-size="9" fill="rgba(255,204,102,0.5)" font-family="ui-sans-serif">datasource</text>
+
+        <!-- ── OTEL ── -->
+        <rect x="876" y="340" width="158" height="72" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(192,132,252,0.25)" stroke-dasharray="5 3"/>
+        <text x="955" y="370" text-anchor="middle" font-size="18" font-family="ui-sans-serif">🔭</text>
+        <text x="955" y="389" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.7)" font-family="ui-sans-serif">OTel Collector</text>
+        <text x="955" y="403" text-anchor="middle" font-size="10" fill="rgba(192,132,252,0.5)" font-family="ui-sans-serif">traces (planned)</text>
+
+        <!-- Backend → OTel -->
+        <path d="M680 240 Q810 280 876 376" stroke="rgba(192,132,252,0.3)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-purple)"/>
+
+        <!-- ── SQLADMIN ── -->
+        <rect x="246" y="50" width="164" height="72" rx="12" fill="none"/><!-- placeholder, used above -->
+
+        <!-- Admin label on backend -->
+        <text x="328" y="286" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.25)" font-family="ui-sans-serif">/admin — SQLAdmin panel</text>
+
+        <!-- Legend -->
+        <g transform="translate(24,480)">
+          <rect x="0" y="0" width="172" height="72" rx="10" fill="rgba(0,0,0,0.25)" stroke="rgba(255,255,255,0.07)"/>
+          <text x="10" y="18" font-size="9" fill="rgba(255,255,255,0.35)" font-family="ui-sans-serif" letter-spacing=".08em">LEGEND</text>
+          <line x1="10" y1="28" x2="40" y2="28" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+          <text x="46" y="32" font-size="9" fill="rgba(255,255,255,0.4)" font-family="ui-sans-serif">HTTP / ClusterIP</text>
+          <line x1="10" y1="44" x2="40" y2="44" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="46" y="48" font-size="9" fill="rgba(255,255,255,0.4)" font-family="ui-sans-serif">Async / Scrape</text>
+          <rect x="10" y="54" width="18" height="10" rx="3" fill="rgba(106,170,255,0.15)" stroke="rgba(106,170,255,0.4)"/>
+          <text x="35" y="63" font-size="9" fill="rgba(255,255,255,0.4)" font-family="ui-sans-serif">NodePort exposed</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── TECH STACK ──────────────────────────────────────────────── -->
+  <section class="section" id="stack">
+    <div class="section-head reveal">
+      <div class="label">Technologies</div>
+      <div class="section-title">Full technology stack</div>
+      <div class="section-sub">Every component chosen deliberately — production patterns, not tutorial defaults.</div>
+    </div>
+
+    <div class="stack-grid reveal">
+      <div class="stack-card">
+        <div class="stack-icon">🚀</div>
+        <div class="stack-name">FastAPI</div>
+        <div class="stack-role">Async Python web framework. Auto-generates OpenAPI docs, dependency injection, Pydantic validation built in.</div>
+        <div class="stack-ver">v0.115.8 · Python 3.12</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🗄️</div>
+        <div class="stack-name">PostgreSQL 16</div>
+        <div class="stack-role">Primary data store. UUID PKs, native ENUM type, indexed timestamps for cursor pagination.</div>
+        <div class="stack-ver">StatefulSet · PVC 2Gi · asyncpg driver</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">⚡</div>
+        <div class="stack-name">Redis 7</div>
+        <div class="stack-role">Dual role: read-through cache for feed and library endpoints, and Celery message broker.</div>
+        <div class="stack-ver">7-alpine · graceful degradation</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🔗</div>
+        <div class="stack-name">SQLAlchemy 2.0</div>
+        <div class="stack-role">Async ORM with mapped columns and relationships. selectinload prevents N+1 queries on feed.</div>
+        <div class="stack-ver">v2.0.38 · fully async</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🧩</div>
+        <div class="stack-name">Alembic</div>
+        <div class="stack-role">Schema migrations run automatically by a Kubernetes init container before the API pod starts.</div>
+        <div class="stack-ver">v1.14.1 · init container pattern</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">⚙️</div>
+        <div class="stack-name">Celery</div>
+        <div class="stack-role">Background task queue. Separate worker pod. Placeholder tasks for image processing and notifications.</div>
+        <div class="stack-ver">Redis broker · same image as API</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">📊</div>
+        <div class="stack-name">Prometheus</div>
+        <div class="stack-role">Scrapes /metrics every 15s. Auto-instrumented HTTP metrics + 6 custom business counters and histograms.</div>
+        <div class="stack-ver">v2.55.1 · 15s scrape interval</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">📈</div>
+        <div class="stack-name">Grafana</div>
+        <div class="stack-role">Pre-provisioned dashboard via ConfigMap. 4 panels: request rate, p95 latency, 5xx rate, status codes.</div>
+        <div class="stack-ver">v11.2.2 · provisioned datasource</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🔭</div>
+        <div class="stack-name">OpenTelemetry</div>
+        <div class="stack-role">FastAPI auto-instrumented. Traces exported via OTLP HTTP. Collector deployment is next roadmap item.</div>
+        <div class="stack-ver">SDK + OTLP exporter</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">☸️</div>
+        <div class="stack-name">Kubernetes</div>
+        <div class="stack-role">minikube locally. Kustomize for manifest management. 9 workloads, health probes, resource limits.</div>
+        <div class="stack-ver">namespace: bartender · Kustomize</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🛡️</div>
+        <div class="stack-name">Pydantic v2</div>
+        <div class="stack-role">Request/response validation. Settings management via pydantic-settings. Zero config boilerplate.</div>
+        <div class="stack-ver">v2.10.6 · pydantic-settings</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🌐</div>
+        <div class="stack-name">NGINX</div>
+        <div class="stack-role">Serves three static files (HTML, CSS, JS) with zero build step. Lightweight alpine image.</div>
+        <div class="stack-ver">1.27-alpine · no build step</div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── API ENDPOINTS ─────────────────────────────────────────── -->
+  <section class="section" id="api">
+    <div class="section-head reveal">
+      <div class="label">HTTP API</div>
+      <div class="section-title">API endpoints</div>
+      <div class="section-sub">RESTful design. Auth is always optional — every endpoint accepts guest or authenticated requests.</div>
+    </div>
+
+    <div class="glass reveal" style="overflow:hidden;">
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Auth</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="method GET">GET</span></td>
+            <td><span class="path">/healthz</span></td>
+            <td><span class="chip">none</span></td>
+            <td class="desc">Liveness probe — returns <code style="font-size:11px;color:var(--muted)">{"ok":true,"ts":"…"}</code></td>
+          </tr>
+          <tr>
+            <td><span class="method POST">POST</span></td>
+            <td><span class="path">/auth/register</span></td>
+            <td><span class="chip">none</span></td>
+            <td class="desc">Register with email, username, password — returns JWT</td>
+          </tr>
+          <tr>
+            <td><span class="method POST">POST</span></td>
+            <td><span class="path">/auth/login</span></td>
+            <td><span class="chip">none</span></td>
+            <td class="desc">Login — returns JWT access token</td>
+          </tr>
+          <tr>
+            <td><span class="method GET">GET</span></td>
+            <td><span class="path">/posts</span></td>
+            <td><span class="chip">optional</span></td>
+            <td class="desc">Cursor-paginated feed (limit, cursor params). Redis-cached 5s.</td>
+          </tr>
+          <tr>
+            <td><span class="method POST">POST</span></td>
+            <td><span class="path">/posts</span></td>
+            <td><span class="chip">optional</span></td>
+            <td class="desc">Create post — type: text | link | photo. Guest or authenticated.</td>
+          </tr>
+          <tr>
+            <td><span class="method GET">GET</span></td>
+            <td><span class="path">/posts/{id}/comments</span></td>
+            <td><span class="chip">optional</span></td>
+            <td class="desc">List all comments for a post</td>
+          </tr>
+          <tr>
+            <td><span class="method POST">POST</span></td>
+            <td><span class="path">/posts/{id}/comments</span></td>
+            <td><span class="chip">optional</span></td>
+            <td class="desc">Add a comment. Guest or authenticated.</td>
+          </tr>
+          <tr>
+            <td><span class="method GET">GET</span></td>
+            <td><span class="path">/library/{type}</span></td>
+            <td><span class="chip">none</span></td>
+            <td class="desc">Recipes · Places · History — Redis-cached 60s</td>
+          </tr>
+          <tr>
+            <td><span class="method GET">GET</span></td>
+            <td><span class="path">/metrics</span></td>
+            <td><span class="chip">internal</span></td>
+            <td class="desc">Prometheus scrape endpoint</td>
+          </tr>
+          <tr>
+            <td><span class="method GET">GET</span></td>
+            <td><span class="path">/admin</span></td>
+            <td><span class="chip">dev only</span></td>
+            <td class="desc">SQLAdmin CRUD panel — Users, Posts, Comments</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── SECURITY ──────────────────────────────────────────────── -->
+  <section class="section" id="security">
+    <div class="section-head reveal">
+      <div class="label">Security</div>
+      <div class="section-title">Authentication & security model</div>
+      <div class="section-sub">JWT stateless auth, Argon2 password hashing, XSS prevention, and a dual guest/registered user model.</div>
+    </div>
+
+    <div class="security-grid reveal">
+      <div class="sec-card glass">
+        <div class="sec-icon">🔐</div>
+        <div class="sec-title">Argon2 Password Hashing</div>
+        <div class="sec-body">Winner of the 2015 Password Hashing Competition. Memory-hard, GPU-resistant. Automatically upgrades old hashes on verify via passlib's <code style="font-size:11px">deprecated="auto"</code> flag.</div>
+        <div class="sec-code">CryptContext(schemes=["argon2"])
+# → $argon2id$v=19$m=65536...
+# memory-hard: 64 MB RAM per hash</div>
+      </div>
+
+      <div class="sec-card glass">
+        <div class="sec-icon">🎫</div>
+        <div class="sec-title">JWT — HS256, 24h expiry</div>
+        <div class="sec-body">Tokens carry the user UUID as <code style="font-size:11px">sub</code>. The <code style="font-size:11px">get_optional_user</code> dependency decodes on every request; any failure (expired, tampered) silently returns <code style="font-size:11px">None</code> — guest mode, not a 401.</div>
+        <div class="sec-code">{ "sub": "3fa8...uuid",
+  "iat": 1704067200,
+  "exp": 1704153600  }
+# → signed with JWT_SECRET_KEY env var</div>
+      </div>
+
+      <div class="sec-card glass">
+        <div class="sec-icon">👤</div>
+        <div class="sec-title">Optional Auth Design</div>
+        <div class="sec-body">Every POST endpoint accepts either a Bearer token or no token. Guest posts store a free-text <code style="font-size:11px">author_name</code> with <code style="font-size:11px">author_id = NULL</code>. The wall is always open — auth is never a barrier.</div>
+        <div class="sec-code">if user:
+    author_id   = user.id
+    author_name = user.username
+else:
+    author_id   = None  # guest
+    author_name = payload.author_name</div>
+      </div>
+
+      <div class="sec-card glass">
+        <div class="sec-icon">🧹</div>
+        <div class="sec-title">XSS Prevention</div>
+        <div class="sec-body">All user-generated content is passed through <code style="font-size:11px">escapeHtml()</code> before any DOM insertion. No raw <code style="font-size:11px">innerHTML</code> from API strings anywhere in the frontend code.</div>
+        <div class="sec-code">// &lt;script&gt;alert(1)&lt;/script&gt; as author_name
+// becomes in DOM:
+// &amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;
+// → inert text, never executed</div>
+      </div>
+
+      <div class="sec-card glass">
+        <div class="sec-icon">🗑️</div>
+        <div class="sec-title">Cascade Delete Strategy</div>
+        <div class="sec-body">When a <strong>post</strong> is deleted, all its comments cascade-delete (<code style="font-size:11px">ON DELETE CASCADE</code>). When a <strong>user</strong> is deleted, their posts and comments remain but <code style="font-size:11px">author_id</code> is set to NULL — content is preserved, identity is removed.</div>
+        <div class="sec-code">Post.author_id FK → users.id
+  ON DELETE SET NULL   ← user gone, post stays
+Comment.post_id FK → posts.id
+  ON DELETE CASCADE    ← post gone, comments go</div>
+      </div>
+
+      <div class="sec-card glass">
+        <div class="sec-icon">⚠️</div>
+        <div class="sec-title">Known Gaps (Dev Only)</div>
+        <div class="sec-body">These are documented and accepted for a local portfolio demo — not for a real deployment:</div>
+        <div class="sec-code">JWT_SECRET_KEY = "dev-change-me"
+# → rotate before any real deploy
+# No rate limiting on POST endpoints
+# Admin panel has no authentication
+# Grafana default admin/admin creds</div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── CACHING ───────────────────────────────────────────────── -->
+  <section class="section" id="caching">
+    <div class="section-head reveal">
+      <div class="label">Caching</div>
+      <div class="section-title">Redis cache strategy</div>
+      <div class="section-sub">Read-through cache with graceful degradation. Redis down = cache miss, not an error.</div>
+    </div>
+
+    <!-- Cache flow diagram -->
+    <div class="glass reveal" style="padding: 28px 32px; margin-bottom: 28px; overflow-x: auto;">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Request flow — GET /posts</div>
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:nowrap;min-width:680px;">
+
+        <div class="flow-box" style="border-color:rgba(106,170,255,0.4);">
+          <div class="fb-icon">📱</div>
+          <div class="fb-name">Client</div>
+          <div class="fb-sub">GET /posts</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0 6px;">
+          <svg width="60" height="20" viewBox="0 0 60 20"><path d="M0 10 L52 10" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr2)"/><defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3 z" fill="rgba(255,255,255,0.3)"/></marker></defs></svg>
+        </div>
+
+        <div class="flow-box" style="border-color:rgba(106,170,255,0.5);">
+          <div class="fb-icon">🚀</div>
+          <div class="fb-name">FastAPI</div>
+          <div class="fb-sub">list_posts()</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0 6px;">
+          <svg width="60" height="20" viewBox="0 0 60 20"><path d="M0 10 L52 10" stroke="rgba(248,113,113,0.6)" stroke-width="1.5" marker-end="url(#arr3)"/><defs><marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3 z" fill="rgba(248,113,113,0.6)"/></marker></defs></svg>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;">check cache</div>
+        </div>
+
+        <div class="flow-box" style="border-color:rgba(248,113,113,0.4);position:relative;">
+          <div class="fb-icon">⚡</div>
+          <div class="fb-name">Redis</div>
+          <div class="fb-sub">key: feed:10:</div>
+          <div style="position:absolute;top:-8px;right:-8px;background:rgba(74,222,128,.2);border:1px solid rgba(74,222,128,.4);border-radius:999px;font-size:9px;color:var(--green);padding:2px 7px;">TTL 5s</div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0 6px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;">
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);">
+              <svg width="32" height="14" viewBox="0 0 32 14"><path d="M0 7 L24 7" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arr-g2)"/><defs><marker id="arr-g2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L0 6 L6 3 z" fill="#4ade80"/></marker></defs></svg>
+              HIT → return cached
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--red);">
+              <svg width="32" height="14" viewBox="0 0 32 14"><path d="M0 7 L24 7" stroke="#f87171" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arr-r2)"/><defs><marker id="arr-r2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L0 6 L6 3 z" fill="#f87171"/></marker></defs></svg>
+              MISS → query DB
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-box" style="border-color:rgba(74,222,128,0.4);">
+          <div class="fb-icon">🗄️</div>
+          <div class="fb-name">PostgreSQL</div>
+          <div class="fb-sub">on cache miss</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:600px;">
+        <div style="padding:12px 16px;border-radius:12px;border:1px solid rgba(248,113,113,0.2);background:rgba(248,113,113,0.05);">
+          <div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:6px;">Feed cache — 5s TTL</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Short TTL keeps the feed fresh. Each page (limit+cursor combination) is cached independently.</div>
+        </div>
+        <div style="padding:12px 16px;border-radius:12px;border:1px solid rgba(74,222,128,0.2);background:rgba(74,222,128,0.05);">
+          <div style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:6px;">Library cache — 60s TTL</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Seeded static data. Long TTL reduces DB reads for content that almost never changes.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── PAGINATION ──────────────────────────────────────────── -->
+  <section class="section" id="pagination">
+    <div class="section-head reveal">
+      <div class="label">Data access</div>
+      <div class="section-title">Cursor-based pagination</div>
+      <div class="section-sub">Keyset pagination — no OFFSET, stable results, O(log n) instead of O(n) on deep pages.</div>
+    </div>
+
+    <div class="glass reveal" style="padding: 28px 32px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+        <div>
+          <div class="label" style="margin-bottom:16px;">Why not OFFSET?</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="padding:12px 14px;border-radius:12px;background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2);">
+              <div style="font-size:12px;font-weight:600;color:var(--red);margin-bottom:4px;">OFFSET 1000</div>
+              <div style="font-size:12px;color:var(--muted);">PostgreSQL must scan and discard 1000 rows. Gets slower as users page deeper. Unstable if new posts arrive.</div>
+            </div>
+            <div style="padding:12px 14px;border-radius:12px;background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.2);">
+              <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:4px;">Cursor pagination</div>
+              <div style="font-size:12px;color:var(--muted);">Jumps directly to the indexed position. O(log n). Stable even when new posts are added mid-scroll.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:16px;">How the cursor works</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px;">The cursor is a base64url-encoded JSON blob containing the last item's <code style="font-size:11px">created_at</code> and <code style="font-size:11px">id</code>:</div>
+          <div style="font-family:ui-monospace,monospace;font-size:11px;line-height:1.7;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+            <span style="color:var(--muted);">// cursor encodes:</span>
+{"created_at":"2026-01-15T10:30Z",
+ "id":"abc-123-..."}
+
+<span style="color:var(--muted);">// SQL WHERE clause:</span>
+WHERE (created_at &lt; '2026-01-15T10:30Z')
+  OR  (created_at = '2026-01-15T10:30Z'
+       AND id &lt; 'abc-123-...')
+ORDER BY created_at DESC, id DESC
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── MONITORING ─────────────────────────────────────────────── -->
+  <section class="section" id="monitoring">
+    <div class="section-head reveal">
+      <div class="label">Observability</div>
+      <div class="section-title">Monitoring & metrics</div>
+      <div class="section-sub">Three observability layers: Prometheus metrics, Grafana dashboards, and OpenTelemetry distributed tracing.</div>
+    </div>
+
+    <!-- Grafana dashboard mockup -->
+    <div class="glass reveal" style="padding:24px;margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;">Bartender Journal API Overview</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">Grafana · auto-refresh 10s · last 15 minutes</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);">:30300</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <!-- Panel 1 -->
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(0,0,0,0.2);">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;">REQUEST RATE / min</div>
+          <div style="font-size:22px;font-weight:700;color:var(--green);margin-bottom:6px;">42.3</div>
+          <svg viewBox="0 0 100 32" style="width:100%;height:32px;">
+            <polyline points="0,28 10,22 20,24 30,16 40,18 50,10 60,12 70,8 80,14 90,6 100,10" fill="none" stroke="#4ade80" stroke-width="1.5" opacity=".7"/>
+            <polyline points="0,28 10,22 20,24 30,16 40,18 50,10 60,12 70,8 80,14 90,6 100,10 100,32 0,32" fill="rgba(74,222,128,0.08)"/>
+          </svg>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px;">rate(http_requests_total[1m])</div>
+        </div>
+
+        <!-- Panel 2 -->
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(0,0,0,0.2);">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;">p95 LATENCY ms</div>
+          <div style="font-size:22px;font-weight:700;color:var(--blue);margin-bottom:6px;">24ms</div>
+          <svg viewBox="0 0 100 32" style="width:100%;height:32px;">
+            <polyline points="0,18 10,20 20,16 30,22 40,14 50,18 60,12 70,16 80,20 90,14 100,18" fill="none" stroke="#6aaeff" stroke-width="1.5" opacity=".7"/>
+            <polyline points="0,18 10,20 20,16 30,22 40,14 50,18 60,12 70,16 80,20 90,14 100,18 100,32 0,32" fill="rgba(106,170,255,0.08)"/>
+          </svg>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px;">histogram_quantile(0.95, ...)</div>
+        </div>
+
+        <!-- Panel 3 -->
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(0,0,0,0.2);">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;">5xx ERROR RATE</div>
+          <div style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">0.00</div>
+          <svg viewBox="0 0 100 32" style="width:100%;height:32px;">
+            <polyline points="0,30 100,30" fill="none" stroke="#ffcc66" stroke-width="1.5" opacity=".5"/>
+          </svg>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px;">rate(…{status=~"5.."}[1m])</div>
+        </div>
+
+        <!-- Panel 4 -->
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(0,0,0,0.2);">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;">STATUS CODES</div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:11px;color:var(--green);">2xx</div>
+              <div style="flex:1;margin:0 8px;height:6px;border-radius:3px;background:rgba(74,222,128,0.15);">
+                <div style="width:94%;height:100%;border-radius:3px;background:var(--green);"></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);">94%</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:11px;color:var(--gold);">4xx</div>
+              <div style="flex:1;margin:0 8px;height:6px;border-radius:3px;background:rgba(255,204,102,0.15);">
+                <div style="width:6%;height:100%;border-radius:3px;background:var(--gold);"></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);">6%</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:11px;color:var(--red);">5xx</div>
+              <div style="flex:1;margin:0 8px;height:6px;border-radius:3px;background:rgba(248,113,113,0.15);">
+                <div style="width:0%;height:100%;border-radius:3px;background:var(--red);"></div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);">0%</div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:10px;">rate(…) by status</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom metrics -->
+    <div class="label reveal" style="margin-bottom:12px;">Custom business metrics (Prometheus Counters + Histograms)</div>
+    <div class="metrics-grid reveal">
+      <div class="metric-card glass">
+        <div class="metric-name">bartender_posts_created_total{type}</div>
+        <div class="metric-desc">Posts created over time, broken down by type (text / link / photo). Lets you see which content type is most popular.</div>
+        <span class="metric-type">Counter</span>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-name">bartender_comments_created_total</div>
+        <div class="metric-desc">Total comments created. Tracks community engagement velocity over time.</div>
+        <span class="metric-type">Counter</span>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-name">bartender_auth_logins_total{outcome}</div>
+        <div class="metric-desc">Login attempts labeled success or failure. A spike in failures = potential brute-force detection signal.</div>
+        <span class="metric-type">Counter</span>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-name">bartender_feed_cache_requests_total{outcome}</div>
+        <div class="metric-desc">Feed cache hit vs. miss rate. Use to calculate Redis efficiency: hits/(hits+misses).</div>
+        <span class="metric-type">Counter</span>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-name">bartender_post_create_seconds</div>
+        <div class="metric-desc">Histogram of post write latency with 9 buckets (10ms–5s). Exposes p50/p95/p99 of actual DB commit time.</div>
+        <span class="metric-type hist">Histogram</span>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-name">bartender_comment_create_seconds</div>
+        <div class="metric-desc">Same histogram for comment write path. Lets you compare write latency between entity types.</div>
+        <span class="metric-type hist">Histogram</span>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── DATA MODEL ─────────────────────────────────────────────── -->
+  <section class="section" id="data">
+    <div class="section-head reveal">
+      <div class="label">Database</div>
+      <div class="section-title">Data model</div>
+      <div class="section-sub">Three tables, UUID primary keys, timezone-aware timestamps, and a dual guest/registered author pattern.</div>
+    </div>
+
+    <div class="glass reveal" style="padding:28px 32px;overflow-x:auto;">
+      <svg viewBox="0 0 900 320" style="width:100%;max-width:900px;display:block;min-width:600px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="db-arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0 0 L0 6 L8 3 z" fill="rgba(255,255,255,0.3)"/>
+          </marker>
+        </defs>
+
+        <!-- USERS table -->
+        <rect x="20" y="20" width="240" height="240" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(74,222,128,0.4)"/>
+        <rect x="20" y="20" width="240" height="40" rx="14" fill="rgba(74,222,128,0.1)"/>
+        <rect x="20" y="46" width="240" height="14" fill="rgba(74,222,128,0.1)"/>
+        <text x="140" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(255,255,255,0.95)" font-family="ui-sans-serif">users</text>
+        <!-- fields -->
+        <text x="36" y="80" font-size="11" fill="rgba(255,204,102,0.9)" font-family="ui-monospace">id</text><text x="140" y="80" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">UUID  PK</text>
+        <text x="36" y="100" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">email</text><text x="140" y="100" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(320) UNIQUE</text>
+        <text x="36" y="120" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">username</text><text x="140" y="120" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(50) UNIQUE</text>
+        <text x="36" y="140" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">password_hash</text><text x="140" y="140" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(255)</text>
+        <text x="36" y="160" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">created_at</text><text x="140" y="160" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">TIMESTAMPTZ</text>
+        <line x1="36" y1="170" x2="244" y2="170" stroke="rgba(255,255,255,0.06)"/>
+        <text x="36" y="188" font-size="10" fill="rgba(255,255,255,0.25)" font-family="ui-sans-serif">→ posts (cascade delete-orphan)</text>
+        <text x="36" y="204" font-size="10" fill="rgba(255,255,255,0.25)" font-family="ui-sans-serif">→ comments (cascade delete-orphan)</text>
+        <text x="36" y="224" font-size="10" fill="rgba(74,222,128,0.5)" font-family="ui-sans-serif">INDEX: email, username</text>
+
+        <!-- POSTS table -->
+        <rect x="330" y="20" width="240" height="280" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(106,170,255,0.4)"/>
+        <rect x="330" y="20" width="240" height="40" rx="14" fill="rgba(106,170,255,0.1)"/>
+        <rect x="330" y="46" width="240" height="14" fill="rgba(106,170,255,0.1)"/>
+        <text x="450" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(255,255,255,0.95)" font-family="ui-sans-serif">posts</text>
+        <text x="346" y="80" font-size="11" fill="rgba(255,204,102,0.9)" font-family="ui-monospace">id</text><text x="430" y="80" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">UUID  PK</text>
+        <text x="346" y="100" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">created_at</text><text x="430" y="100" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">TIMESTAMPTZ  INDEX</text>
+        <text x="346" y="120" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">type</text><text x="430" y="120" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">ENUM(text,link,photo)</text>
+        <text x="346" y="140" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">title</text><text x="430" y="140" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(140) ?</text>
+        <text x="346" y="160" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">body</text><text x="430" y="160" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">TEXT ?</text>
+        <text x="346" y="180" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">link_url</text><text x="430" y="180" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(2048) ?</text>
+        <text x="346" y="200" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">image_url</text><text x="430" y="200" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(2048) ?</text>
+        <text x="346" y="220" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">author_id</text><text x="430" y="220" font-size="11" fill="rgba(248,113,113,0.7)" font-family="ui-monospace">FK→users SET NULL ?</text>
+        <text x="346" y="240" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">author_name</text><text x="430" y="240" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(80) ?</text>
+        <line x1="346" y1="250" x2="554" y2="250" stroke="rgba(255,255,255,0.06)"/>
+        <text x="346" y="268" font-size="10" fill="rgba(106,170,255,0.5)" font-family="ui-sans-serif">INDEX: created_at</text>
+        <text x="346" y="284" font-size="10" fill="rgba(255,255,255,0.25)" font-family="ui-sans-serif">→ comments (cascade delete)</text>
+
+        <!-- COMMENTS table -->
+        <rect x="640" y="20" width="240" height="240" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(192,132,252,0.4)"/>
+        <rect x="640" y="20" width="240" height="40" rx="14" fill="rgba(192,132,252,0.1)"/>
+        <rect x="640" y="46" width="240" height="14" fill="rgba(192,132,252,0.1)"/>
+        <text x="760" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(255,255,255,0.95)" font-family="ui-sans-serif">comments</text>
+        <text x="656" y="80" font-size="11" fill="rgba(255,204,102,0.9)" font-family="ui-monospace">id</text><text x="720" y="80" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">UUID  PK</text>
+        <text x="656" y="100" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">post_id</text><text x="720" y="100" font-size="11" fill="rgba(248,113,113,0.7)" font-family="ui-monospace">FK→posts CASCADE INDEX</text>
+        <text x="656" y="120" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">created_at</text><text x="720" y="120" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">TIMESTAMPTZ  INDEX</text>
+        <text x="656" y="140" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">body</text><text x="720" y="140" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">TEXT  NOT NULL</text>
+        <text x="656" y="160" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">author_id</text><text x="720" y="160" font-size="11" fill="rgba(248,113,113,0.7)" font-family="ui-monospace">FK→users SET NULL ?</text>
+        <text x="656" y="180" font-size="11" fill="rgba(255,255,255,0.7)" font-family="ui-monospace">author_name</text><text x="720" y="180" font-size="11" fill="rgba(255,255,255,0.4)" font-family="ui-monospace">VARCHAR(80) ?</text>
+        <line x1="656" y1="190" x2="864" y2="190" stroke="rgba(255,255,255,0.06)"/>
+        <text x="656" y="208" font-size="10" fill="rgba(192,132,252,0.5)" font-family="ui-sans-serif">INDEX: post_id, created_at</text>
+        <text x="656" y="224" font-size="10" fill="rgba(255,255,255,0.25)" font-family="ui-sans-serif">UNIQUE(id, post_id)</text>
+
+        <!-- FK lines -->
+        <!-- users.id → posts.author_id -->
+        <path d="M260 120 Q295 120 330 220" stroke="rgba(248,113,113,0.4)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#db-arr)"/>
+        <text x="275" y="115" font-size="9" fill="rgba(248,113,113,0.5)" font-family="ui-sans-serif">SET NULL</text>
+
+        <!-- posts.id → comments.post_id -->
+        <path d="M570 100 Q605 100 640 100" stroke="rgba(248,113,113,0.4)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#db-arr)"/>
+        <text x="588" y="93" font-size="9" fill="rgba(248,113,113,0.5)" font-family="ui-sans-serif">CASCADE</text>
+
+        <!-- users.id → comments.author_id -->
+        <path d="M260 140 Q450 310 640 160" stroke="rgba(248,113,113,0.25)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#db-arr)"/>
+      </svg>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── ROADMAP ────────────────────────────────────────────────── -->
+  <section class="section" id="roadmap">
+    <div class="section-head reveal">
+      <div class="label">Next steps</div>
+      <div class="section-title">Roadmap</div>
+      <div class="section-sub">Prioritised by portfolio impact. P1 items are planned and scoped. P2 and P3 are documented but not yet scheduled.</div>
+    </div>
+
+    <div class="roadmap-grid reveal">
+      <div>
+        <div class="rm-col-title">
+          <div class="rm-dot" style="background:var(--red);"></div>
+          <span style="color:var(--red);">P1</span> — Portfolio impact
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">1</div>
+          <div><strong>Dispatch Celery tasks</strong><br/><span style="color:var(--muted);font-size:12px;">Call process_image.delay() on photo post creation. Closes the Celery loop.</span></div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">2</div>
+          <div><strong>Persist library in DB</strong><br/><span style="color:var(--muted);font-size:12px;">Add Recipe/Place/HistoryEntry ORM tables + Alembic migration + CRUD endpoints.</span></div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">3</div>
+          <div><strong>Frontend redesign</strong><br/><span style="color:var(--muted);font-size:12px;">Applied on update/plan-frontend — glassmorphism, hero, type badges, skeleton loaders.</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="rm-col-title">
+          <div class="rm-dot" style="background:var(--gold);"></div>
+          <span style="color:var(--gold);">P2</span> — Correctness
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">4</div>
+          <div><strong>Rate limiting</strong><br/><span style="color:var(--muted);font-size:12px;">slowapi on POST endpoints. Redis already present — minimal effort, high value.</span></div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">5</div>
+          <div><strong>Prometheus PVC</strong><br/><span style="color:var(--muted);font-size:12px;">Replace emptyDir with PVC so metrics survive pod restarts.</span></div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">6</div>
+          <div><strong>OTel collector</strong><br/><span style="color:var(--muted);font-size:12px;">Deploy Jaeger or Tempo to actually receive and visualise distributed traces.</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="rm-col-title">
+          <div class="rm-dot" style="background:var(--muted);"></div>
+          <span style="color:var(--muted);">P3</span> — Hardening
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">7</div>
+          <div><strong>Test suite</strong><br/><span style="color:var(--muted);font-size:12px;">pytest-asyncio + httpx.AsyncClient. In-memory SQLite for fast unit tests.</span></div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">8</div>
+          <div><strong>Admin auth</strong><br/><span style="color:var(--muted);font-size:12px;">sqladmin AuthenticationBackend. Even a hardcoded password beats open access.</span></div>
+        </div>
+        <div class="rm-item">
+          <div class="rm-num">9</div>
+          <div><strong>JWT secret rotation</strong><br/><span style="color:var(--muted);font-size:12px;">Document + script the process. Reference k8s Secret via secretKeyRef.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /container -->
+
+<!-- ── FOOTER ──────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-l">Bartender Journal &mdash; DevOps Portfolio &mdash; 2026</div>
+      <div class="footer-chips">
+        <span class="chip">FastAPI</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">Redis</span>
+        <span class="chip">Celery</span>
+        <span class="chip">Kubernetes</span>
+        <span class="chip">Prometheus</span>
+        <span class="chip">Grafana</span>
+        <span class="chip">OpenTelemetry</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Scroll reveal ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── Animated counters ── */
+  const counters = document.querySelectorAll('[data-count]');
+  const countObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.count);
+      let current = 0;
+      const step = Math.ceil(target / 30);
+      const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current;
+        if (current >= target) clearInterval(timer);
+      }, 40);
+      countObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => countObserver.observe(c));
+</script>
+</body>
+</html>
