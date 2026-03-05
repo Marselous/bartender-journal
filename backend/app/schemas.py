@@ -2,15 +2,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from enum import StrEnum
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
-
-class PostType(StrEnum):
-    text = "text"
-    link = "link"
-    photo = "photo"
+from app.models import PostType
 
 
 class UserPublic(BaseModel):

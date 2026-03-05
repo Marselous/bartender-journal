@@ -98,10 +98,12 @@ kubectl -n bartender rollout status deploy/traffic-generator
 
 ### 4.2 Code entrypoints
 
-- API routes: `backend/app/main.py`
+- App entry point: `backend/app/main.py`
+- API routes: `backend/app/routes/` (health, auth, posts, comments, library)
 - Models: `backend/app/models.py`
 - Schemas: `backend/app/schemas.py`
 - Security: `backend/app/security.py`
+- Metrics: `backend/app/metrics.py`
 
 ### 4.3 Simple tests (manual)
 
@@ -191,7 +193,7 @@ Provides CRUD-style management UI for:
 
 ### 7.2 Where in code
 
-- SQLAdmin setup + model views in `backend/app/main.py` (`UserAdmin`, `PostAdmin`, `CommentAdmin`).
+- SQLAdmin setup + model views in `backend/app/admin.py` (`UserAdmin`, `PostAdmin`, `CommentAdmin`).
 
 ### 7.3 How to test quickly
 
@@ -215,7 +217,7 @@ Verify that tables appear and list data created via API/UI.
 
 ### 8.2 Where in code/manifests
 
-- App metrics instrumentation: `backend/app/main.py`
+- App metrics instrumentation: `backend/app/metrics.py`
 - Prometheus scrape + alert config: `k8s/observability/prometheus.yaml`
 - Grafana datasource/dashboard provisioning: `k8s/observability/grafana.yaml`
 
@@ -342,9 +344,11 @@ curl -s "http://$(minikube ip):30001/metrics" | head -n 40
 ## 12) Suggested reading order (for newcomers)
 
 1. `README.md` (quick start)
-2. `docs/portfolio-feature-walkthrough.md` (this guide)
-3. `backend/app/main.py` (API + instrumentation)
-4. `backend/app/worker.py` (async processing)
-5. `k8s/` manifests (deployment model)
-6. `k8s/observability/*.yaml` (monitoring/alerts)
-7. `k8s/load/traffic.yaml` + `scripts/traffic_generator.py` (traffic simulation)
+2. `docs/STAR-summary.md` (resume-style overview)
+3. `docs/portfolio-feature-walkthrough.md` (this guide)
+4. `backend/app/main.py` (entry point) → `backend/app/routes/` (API handlers)
+5. `backend/app/worker.py` (async processing)
+6. `k8s/` manifests (deployment model)
+7. `k8s/observability/*.yaml` (monitoring/alerts)
+8. `k8s/load/traffic.yaml` + `scripts/traffic_generator.py` (traffic simulation)
+9. `docs/ARCHITECTURE.md` (full architecture deep dive)
