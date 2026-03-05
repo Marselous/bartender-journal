@@ -13,10 +13,10 @@ A public “bartender wall” (posts + comments) plus a small library section, d
 - `frontend/`: static UI (served by NGINX)
 - `k8s/`: minikube manifests (NodePorts)
 
-### Portfolio walkthrough guide
-For a complete feature-by-feature explanation (architecture, what each feature does, and how to run demo tests), see:
-
-- `docs/portfolio-feature-walkthrough.md`
+### Documentation
+- `docs/STAR-summary.md` — resume-style overview (STAR format)
+- `docs/portfolio-feature-walkthrough.md` — feature-by-feature demo runbook
+- `docs/ARCHITECTURE.md` — full architecture deep dive
 
 ### Prereqs (local machine)
 - `minikube`, `kubectl`, `docker`
