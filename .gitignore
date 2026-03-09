@@ -37,3 +37,4 @@ htmlcov/
 *.tar
 __pycache__/
 *.pyc
+temporary-screenshots/
