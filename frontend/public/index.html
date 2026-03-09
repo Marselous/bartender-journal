@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bartender Journal</title>
     <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
 
-    <!-- ── Navigation ─────────────────────────────────────────────────── -->
-    <div class="nav-wrap">
-      <nav>
-        <div class="brand">
-          <h1 class="brand-name">Bartender Journal</h1>
-          <div class="live-dot" title="API status"></div>
-        </div>
+    <!-- ── Navigation ──────────────────────────────────────────────────── -->
+    <header class="site-header">
+      <nav class="site-nav">
+        <div class="nav-logo">BJ</div>
         <div class="navlinks">
           <a href="#wall">Wall</a>
           <a href="#library">Library</a>
@@ -23,210 +23,234 @@
         </div>
         <div class="nav-actions">
           <span id="userBadge"></span>
-          <button id="openRegister" class="btn-ghost btn-sm">Register</button>
-          <button id="openLogin" class="btn-primary btn-sm">Sign in</button>
-          <button id="settingsToggle" class="nav-settings-toggle" title="API settings">&#x2699;</button>
+          <button id="openRegister" class="btn-text-nav">Register</button>
+          <button id="openLogin" class="btn-outline-nav btn-sm">Sign in</button>
+          <button id="settingsToggle" class="nav-gear" title="API settings">&#x2699;</button>
+          <div class="live-dot" title="API status"></div>
         </div>
       </nav>
       <div id="settingsDrawer" class="settings-drawer">
         <div class="settings-row">
           <label for="apiBase">API base URL</label>
-          <input class="input" id="apiBase" placeholder="http://MINIKUBE_IP:30001" style="max-width:320px;" />
-          <button id="saveApiBase" class="btn-ghost btn-sm">Save</button>
+          <input class="input" id="apiBase" placeholder="http://MINIKUBE_IP:30001" />
+          <button id="saveApiBase" class="btn-outline-nav btn-sm">Save</button>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div class="container">
-
-      <!-- ── Hero ─────────────────────────────────────────────────────── -->
-      <section class="hero" id="about">
-        <div class="announce-badge">
-          <span class="dot"></span>
-          DevOps Portfolio &middot; FastAPI &middot; Kubernetes &middot; Redis
+    <!-- ── Hero ────────────────────────────────────────────────────────── -->
+    <section class="hero" id="about">
+      <div class="hero-noise" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-meta">
+          <span class="hero-year">Est. 2026</span>
+          <span class="hero-divider"></span>
+          <span class="hero-tag">DevOps Portfolio</span>
         </div>
-        <h2 class="hero-headline">Run a living<br>bartender wall.</h2>
-        <p class="hero-sub">
-          An async Python API, Redis cache, PostgreSQL, and a Kubernetes cluster &mdash;
-          live in your browser. Post a note, a link, or a photo; anyone can comment.
+        <h1 class="hero-headline">
+          <span class="hl-1">THE</span>
+          <span class="hl-2">BARTENDER</span>
+          <span class="hl-3">WALL</span>
+        </h1>
+      </div>
+      <div class="hero-bottom">
+        <p class="hero-tagline">
+          More than a shift log. A living community board for the bar &mdash;
+          post notes, links, and recipes. Anyone can comment.
         </p>
         <div class="hero-ctas">
-          <a href="#wall" id="ctaWall" class="btn-primary">View the wall &darr;</a>
-          <button id="heroSignup" class="btn-ghost">Sign up</button>
+          <a href="#wall" id="ctaWall" class="btn-brass">View the wall</a>
+          <button id="heroSignup" class="btn-ghost-light">Sign up free</button>
         </div>
-
-        <!-- Static mosaic decoration -->
-        <div class="hero-mosaic" aria-hidden="true">
-          <div class="mosaic-card">
-            <div class="mc-bar"></div>
-            <div class="mc-line"></div>
-            <div class="mc-line med"></div>
-            <div class="mc-line short"></div>
-          </div>
-          <div class="mosaic-card" style="margin-top:28px;">
-            <div class="mc-bar short"></div>
-            <div class="mc-line"></div>
-            <div class="mc-line med"></div>
-          </div>
-          <div class="mosaic-card" style="margin-top:-16px;">
-            <div class="mc-bar"></div>
-            <div class="mc-line short"></div>
-            <div class="mc-line"></div>
-          </div>
-          <div class="mosaic-card">
-            <div class="mc-bar short"></div>
-            <div class="mc-line med"></div>
-            <div class="mc-line short"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Tech stack strip ──────────────────────────────────────────── -->
-      <div class="stack-strip">
-        <span class="stack-pill"><span class="sp-dot" style="background:#4ade80;"></span>FastAPI</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#6aaeff;"></span>PostgreSQL</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#ff6b6b;"></span>Redis</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#fb923c;"></span>Celery</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#60a5fa;"></span>Kubernetes</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#f472b6;"></span>Prometheus</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#ffcc66;"></span>Grafana</span>
-        <span class="stack-pill"><span class="sp-dot" style="background:#c084fc;"></span>OpenTelemetry</span>
       </div>
+    </section>
 
-      <!-- ── App grid (post form + library) ────────────────────────────── -->
-      <div class="app-grid">
+    <!-- ── About strip ─────────────────────────────────────────────────── -->
+    <section class="about-strip" id="about-detail">
+      <div class="about-lede">
+        An async Python API, Redis cache, PostgreSQL persistence, and a Kubernetes cluster &mdash; live in your browser.
+      </div>
+      <div class="about-cols">
+        <div class="about-col">
+          <div class="about-col-label">The stack</div>
+          <div class="stack-chips">
+            <span class="chip">FastAPI</span>
+            <span class="chip">PostgreSQL</span>
+            <span class="chip">Redis</span>
+            <span class="chip">Celery</span>
+            <span class="chip">Kubernetes</span>
+            <span class="chip">Prometheus</span>
+            <span class="chip">Grafana</span>
+            <span class="chip">OpenTelemetry</span>
+          </div>
+        </div>
+        <div class="about-col">
+          <div class="about-col-label">What it does</div>
+          <p>
+            A full-stack portfolio project shaped like a real product. Post shift notes,
+            cocktail links, or photos. Browse the recipe library. All backed by a
+            production-grade stack running on minikube with observability built in.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Contribute: new post + library ──────────────────────────────── -->
+    <section class="contribute-section" id="wall">
+      <div class="section-eyebrow">Contribute</div>
+      <div class="contribute-grid">
 
         <!-- New post form -->
-        <div class="glass" style="padding:24px;" id="wall">
-          <div class="section-title">New post</div>
-          <div class="type-tabs">
-            <button class="type-tab active" data-type="text">Text</button>
-            <button class="type-tab" data-type="link">Link</button>
-            <button class="type-tab" data-type="photo">Photo</button>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">New post</div>
+            <div class="type-tabs">
+              <button class="type-tab active" data-type="text">Text</button>
+              <button class="type-tab" data-type="link">Link</button>
+              <button class="type-tab" data-type="photo">Photo</button>
+            </div>
           </div>
-          <!-- hidden select keeps value in sync for JS -->
           <select id="postType" style="display:none;">
             <option value="text" selected>text</option>
             <option value="link">link</option>
             <option value="photo">photo</option>
           </select>
-          <div class="form-row" style="margin-bottom:12px;">
-            <div>
-              <label>Your name (optional)</label>
+          <div class="form-row">
+            <div class="field">
+              <label>Your name <span class="opt">(optional)</span></label>
               <input class="input" id="postAuthor" placeholder="Guest" maxlength="80" />
             </div>
-            <div>
-              <label>Title (optional)</label>
+            <div class="field">
+              <label>Title <span class="opt">(optional)</span></label>
               <input class="input" id="postTitle" placeholder="Shift notes, new syrup…" maxlength="140" />
             </div>
           </div>
-          <div class="form-row-1">
-            <div id="postBodyWrap">
+          <div class="form-stack">
+            <div id="postBodyWrap" class="field">
               <label>Body</label>
               <textarea id="postBody" placeholder="Write something…"></textarea>
             </div>
-            <div id="postLinkWrap" style="display:none;">
+            <div id="postLinkWrap" class="field" style="display:none;">
               <label>Link URL</label>
               <input class="input" id="postLink" placeholder="https://…" />
             </div>
-            <div id="postPhotoWrap" style="display:none;">
+            <div id="postPhotoWrap" class="field" style="display:none;">
               <label>Image URL</label>
               <input class="input" id="postImage" placeholder="https://…jpg" />
             </div>
-            <button id="submitPost" class="btn-primary">Post to wall</button>
+            <button id="submitPost" class="btn-brass btn-full">Post to wall</button>
           </div>
         </div>
 
         <!-- Library -->
-        <div class="glass" style="padding:24px;" id="library">
-          <div class="section-title">Library</div>
-          <div class="library-tabs">
-            <button class="lib-tab active" data-library="recipes">Recipes</button>
-            <button class="lib-tab" data-library="places">Places</button>
-            <button class="lib-tab" data-library="history">History</button>
+        <div class="panel" id="library">
+          <div class="panel-head">
+            <div class="panel-title">Library</div>
+            <div class="library-tabs">
+              <button class="lib-tab active" data-library="recipes">Recipes</button>
+              <button class="lib-tab" data-library="places">Places</button>
+              <button class="lib-tab" data-library="history">History</button>
+            </div>
           </div>
-          <div id="libraryOut" style="color:var(--muted);font-size:13px;">
-            Select a category above to browse the library.
+          <div id="libraryOut" class="library-placeholder">
+            Select a category to browse the library.
           </div>
         </div>
 
-      </div><!-- /app-grid -->
+      </div>
+    </section>
 
-      <!-- ── Wall feed ──────────────────────────────────────────────────── -->
-      <section class="wall-section">
-        <div class="wall-header">
-          <div class="section-title" style="margin:0;">Wall feed</div>
-        </div>
-        <div id="feed" class="feed"></div>
-        <div class="load-more-wrap">
-          <button id="loadMore" class="btn-ghost" style="display:none;">Load more</button>
-        </div>
-      </section>
+    <!-- ── Wall feed ───────────────────────────────────────────────────── -->
+    <section class="wall-section">
+      <div class="wall-head">
+        <div class="section-eyebrow">The wall</div>
+      </div>
+      <div id="feed" class="feed"></div>
+      <div class="load-more-wrap">
+        <button id="loadMore" class="btn-outline-dark" style="display:none;">Load more posts</button>
+      </div>
+    </section>
 
-    </div><!-- /container -->
-
-    <!-- ── Footer ────────────────────────────────────────────────────────── -->
-    <footer>
-      <div class="container">
-        <div class="footer-inner">
-          <div class="footer-brand">Bartender Journal &middot; 2026</div>
-          <div class="footer-stack">
-            <span>FastAPI</span>
-            <span>PostgreSQL</span>
-            <span>Redis</span>
-            <span>Kubernetes</span>
-            <span>Prometheus</span>
-            <span>Grafana</span>
+    <!-- ── Footer ──────────────────────────────────────────────────────── -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div class="footer-logo">BJ</div>
+          <div class="footer-nav">
+            <div class="footer-col">
+              <div class="footer-col-head">Navigation</div>
+              <a href="#wall">Wall</a>
+              <a href="#library">Library</a>
+              <a href="#about">About</a>
+            </div>
+            <div class="footer-col">
+              <div class="footer-col-head">Backend</div>
+              <span>FastAPI</span>
+              <span>PostgreSQL</span>
+              <span>Redis</span>
+              <span>Celery</span>
+            </div>
+            <div class="footer-col">
+              <div class="footer-col-head">Infra</div>
+              <span>Kubernetes</span>
+              <span>Prometheus</span>
+              <span>Grafana</span>
+              <span>OpenTelemetry</span>
+            </div>
           </div>
+        </div>
+        <div class="footer-bottom">
+          <span>Bartender Journal &copy; 2026</span>
+          <span>A DevOps portfolio project</span>
         </div>
       </div>
     </footer>
 
-    <!-- ── Toast ──────────────────────────────────────────────────────────── -->
+    <!-- ── Toast ──────────────────────────────────────────────────────── -->
     <div id="toast" class="toast"></div>
 
-    <!-- ── Register modal ─────────────────────────────────────────────────── -->
+    <!-- ── Register modal ─────────────────────────────────────────────── -->
     <div id="registerModal" class="modal">
-      <div class="modal-inner glass">
+      <div class="modal-inner">
         <div class="modal-header">
-          <h3 class="modal-title">Register</h3>
+          <h3 class="modal-title">Create account</h3>
           <button class="modal-close" data-close-modal="registerModal">&#x2715;</button>
         </div>
-        <div class="form-row-1">
-          <div>
+        <div class="form-stack">
+          <div class="field">
             <label>Email</label>
             <input class="input" id="regEmail" type="email" placeholder="you@example.com" />
           </div>
-          <div>
+          <div class="field">
             <label>Username</label>
             <input class="input" id="regUsername" placeholder="bartender_name" />
           </div>
-          <div>
+          <div class="field">
             <label>Password</label>
             <input class="input" id="regPassword" type="password" />
           </div>
-          <button id="submitRegister" class="btn-primary">Create account</button>
+          <button id="submitRegister" class="btn-brass btn-full">Create account</button>
         </div>
       </div>
     </div>
 
-    <!-- ── Login modal ────────────────────────────────────────────────────── -->
+    <!-- ── Login modal ────────────────────────────────────────────────── -->
     <div id="loginModal" class="modal">
-      <div class="modal-inner glass">
+      <div class="modal-inner">
         <div class="modal-header">
           <h3 class="modal-title">Sign in</h3>
           <button class="modal-close" data-close-modal="loginModal">&#x2715;</button>
         </div>
-        <div class="form-row-1">
-          <div>
+        <div class="form-stack">
+          <div class="field">
             <label>Username</label>
             <input class="input" id="loginUsername" placeholder="bartender_name" />
           </div>
-          <div>
+          <div class="field">
             <label>Password</label>
             <input class="input" id="loginPassword" type="password" />
           </div>
-          <button id="submitLogin" class="btn-primary">Sign in</button>
+          <button id="submitLogin" class="btn-brass btn-full">Sign in</button>
         </div>
       </div>
     </div>

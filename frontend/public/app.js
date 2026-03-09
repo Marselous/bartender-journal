@@ -153,7 +153,7 @@ async function loadLibrary(which) {
 /* ── Post card ───────────────────────────────────────────────────────────── */
 function postCard(p) {
   const article = document.createElement("article");
-  article.className = "glass post-card";
+  article.className = "post-card";
   article.dataset.postId = p.id;
 
   const author = p.author_name || "Guest";
@@ -206,7 +206,7 @@ function postCard(p) {
 /* ── Skeleton card ───────────────────────────────────────────────────────── */
 function skeletonCard() {
   const div = document.createElement("div");
-  div.className = "glass skeleton-card";
+  div.className = "skeleton-card";
   div.innerHTML = `
     <div class="skel-line h16"></div>
     <div class="skel-line h12"></div>
