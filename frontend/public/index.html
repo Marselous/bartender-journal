@@ -7,7 +7,7 @@
     <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -15,7 +15,7 @@
     <!-- ── Navigation ──────────────────────────────────────────────────── -->
     <header class="site-header">
       <nav class="site-nav">
-        <div class="nav-logo">bj</div>
+        <div class="nav-logo">bartender journal</div>
         <div class="navlinks">
           <a href="#wall">Wall</a>
           <a href="#library">Library</a>
@@ -23,8 +23,8 @@
         </div>
         <div class="nav-actions">
           <span id="userBadge"></span>
-          <button id="openRegister" class="btn-nav-text">Register</button>
-          <button id="openLogin" class="btn-nav-outline btn-sm">Sign in</button>
+          <button id="openRegister" class="btn-nav-ghost">Register</button>
+          <button id="openLogin" class="btn-coral btn-sm">Sign in</button>
           <button id="settingsToggle" class="nav-gear" title="API settings">&#x2699;</button>
           <div class="live-dot" title="API status"></div>
         </div>
@@ -33,112 +33,190 @@
         <div class="settings-row">
           <label for="apiBase">API base URL</label>
           <input class="input" id="apiBase" placeholder="http://MINIKUBE_IP:30001" />
-          <button id="saveApiBase" class="btn-nav-outline btn-sm">Save</button>
+          <button id="saveApiBase" class="btn-nav-ghost btn-sm">Save</button>
         </div>
       </div>
     </header>
 
-    <!-- ── Hero panels ──────────────────────────────────────────────────── -->
-    <section class="hero-panels-section">
-      <div class="hero-panel-left">
-        <div class="hp-grid" aria-hidden="true">
-          <div class="hp-cell"></div><div class="hp-cell"></div>
-          <div class="hp-cell"></div><div class="hp-cell"></div>
-          <div class="hp-cell hp-accent"></div><div class="hp-cell"></div>
-          <div class="hp-cell"></div><div class="hp-cell"></div>
-          <div class="hp-cell"></div><div class="hp-cell"></div>
-          <div class="hp-cell"></div><div class="hp-cell hp-accent-2"></div>
+    <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+    <section class="hero" id="about">
+      <div class="hero-content">
+        <div class="hero-pill">&#127379; The bartender community</div>
+        <h1 class="hero-heading">
+          your bartending<br>
+          <span class="hero-accent">Starts here.</span>
+        </h1>
+        <p class="hero-sub">
+          More than a shift log. A living community board — post notes,
+          recipes, and links. Anyone can comment. Backed by a real stack.
+        </p>
+        <div class="hero-ctas">
+          <a href="#wall" id="ctaWall" class="btn-coral">View the wall</a>
+          <button id="heroSignup" class="btn-ghost-dark">Sign up free</button>
         </div>
-        <div class="hp-label">Community Board</div>
       </div>
-      <div class="hero-panel-right">
-        <div class="hp-circle" aria-hidden="true"></div>
-        <div class="hp-inner-text">
-          <span class="hp-tag">Live · Kubernetes · Redis</span>
-          <div class="hp-big-letter">BJ</div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hv-ring"></div>
+        <div class="hv-ring hv-ring-2"></div>
+        <div class="hv-card hv-card-1">
+          <div class="hvc-dot"></div>
+          <span>Negroni recipe</span>
+        </div>
+        <div class="hv-card hv-card-2">
+          <div class="hvc-dot hvc-dot-2"></div>
+          <span>Shift note posted</span>
+        </div>
+        <div class="hv-icon">🍹</div>
+      </div>
+    </section>
+
+    <!-- ── Why strip ─────────────────────────────────────────────────────── -->
+    <div class="why-strip">
+      <span class="why-pill">why</span>
+      <span class="why-text">· the most authentic bartender community online</span>
+    </div>
+
+    <!-- ── Feature list (location-style rows) ────────────────────────────── -->
+    <section class="features-list" id="features">
+      <div class="fl-row">
+        <div class="fl-num">01</div>
+        <div class="fl-info">
+          <div class="fl-title">Cocktail Recipes</div>
+          <div class="fl-meta">Classic · Seasonal · Originals</div>
+        </div>
+        <div class="fl-tags">
+          <span class="fl-tag">Recipes</span>
+          <span class="fl-tag">Library</span>
+        </div>
+        <a href="#library" class="fl-link">Browse &rarr;</a>
+      </div>
+      <div class="fl-row">
+        <div class="fl-num">02</div>
+        <div class="fl-info">
+          <div class="fl-title">Shift Notes</div>
+          <div class="fl-meta">Text · Links · Photos</div>
+        </div>
+        <div class="fl-tags">
+          <span class="fl-tag">Wall</span>
+          <span class="fl-tag">Community</span>
+        </div>
+        <a href="#wall" class="fl-link">Post now &rarr;</a>
+      </div>
+      <div class="fl-row">
+        <div class="fl-num">03</div>
+        <div class="fl-info">
+          <div class="fl-title">Bar History</div>
+          <div class="fl-meta">Origins · Techniques · Eras</div>
+        </div>
+        <div class="fl-tags">
+          <span class="fl-tag">History</span>
+          <span class="fl-tag">Education</span>
+        </div>
+        <a href="#library" class="fl-link">Explore &rarr;</a>
+      </div>
+      <div class="fl-row">
+        <div class="fl-num">04</div>
+        <div class="fl-info">
+          <div class="fl-title">Notable Places</div>
+          <div class="fl-meta">Bars · Distilleries · Venues</div>
+        </div>
+        <div class="fl-tags">
+          <span class="fl-tag">Places</span>
+          <span class="fl-tag">Discover</span>
+        </div>
+        <a href="#library" class="fl-link">Discover &rarr;</a>
+      </div>
+    </section>
+
+    <!-- ── Dark feature band ──────────────────────────────────────────────── -->
+    <section class="dark-band">
+      <div class="db-inner">
+        <div class="db-quote">
+          &ldquo;Every shift tells a story<br>worth sharing.&rdquo;
+        </div>
+        <div class="db-right">
+          <p class="db-sub">
+            A production-grade async Python API, Redis cache, PostgreSQL,
+            and a Kubernetes cluster — all so your posts never miss a beat.
+          </p>
+          <a href="#wall" class="btn-coral-outline">Join the wall &rarr;</a>
         </div>
       </div>
     </section>
 
-    <!-- ── Hero text ────────────────────────────────────────────────────── -->
-    <section class="hero-text-section" id="about">
-      <div class="hero-text-inner">
-        <div class="ht-left">
-          <h1 class="ht-heading">
-            Transform<br>A Shift Into<br>A Story.
-          </h1>
+    <!-- ── Approach cards ─────────────────────────────────────────────────── -->
+    <section class="approach-section">
+      <div class="ap-inner">
+        <div class="ap-head">
+          <span class="ap-pill">the stack</span>
+          <h2 class="ap-heading">The core of our approach</h2>
         </div>
-        <div class="ht-right">
-          <p class="ht-sub">
-            More than a logbook. A living community wall for bartenders —
-            post shift notes, cocktail links, and photos. Anyone can comment.
-            Backed by a production-grade async Python stack on Kubernetes.
-          </p>
-          <div class="ht-ctas">
-            <a href="#wall" id="ctaWall" class="btn-orange">View the wall</a>
-            <button id="heroSignup" class="btn-outline-w">Sign up</button>
+        <div class="ap-cards">
+          <div class="ap-card">
+            <div class="ap-icon">⚡</div>
+            <div class="ap-card-title">Async Python</div>
+            <p>FastAPI with async SQLAlchemy — every request is non-blocking.</p>
           </div>
-          <div class="ht-stats">
-            <div class="stat"><span class="stat-n">5</span><span class="stat-l">Services</span></div>
-            <div class="stat"><span class="stat-n">∞</span><span class="stat-l">Posts</span></div>
-            <div class="stat"><span class="stat-n">24h</span><span class="stat-l">JWT Auth</span></div>
-            <div class="stat"><span class="stat-n">60s</span><span class="stat-l">Cache TTL</span></div>
+          <div class="ap-card">
+            <div class="ap-icon">⚙️</div>
+            <div class="ap-card-title">Redis Cache</div>
+            <p>Feed cached at 5s TTL. Library at 60s. Graceful degradation if Redis is down.</p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── About dark band ──────────────────────────────────────────────── -->
-    <section class="about-band">
-      <div class="ab-inner">
-        <div class="ab-logo">bj</div>
-        <div class="ab-text">
-          <p class="ab-lead">
-            A full-stack DevOps portfolio project built to production standards —
-            FastAPI, async PostgreSQL, Redis caching, Celery workers, OpenTelemetry
-            tracing, and a Grafana dashboard. Deploy everything with one command.
-          </p>
-          <div class="ab-tags">
-            <span>FastAPI</span><span>PostgreSQL</span><span>Redis</span>
-            <span>Celery</span><span>Kubernetes</span><span>Prometheus</span>
-            <span>Grafana</span><span>OpenTelemetry</span><span>Python 3.12</span>
+          <div class="ap-card">
+            <div class="ap-icon">🔑</div>
+            <div class="ap-card-title">JWT Auth</div>
+            <p>Optional bearer token auth. Guest posting always available — no friction.</p>
+          </div>
+          <div class="ap-card">
+            <div class="ap-icon">☸️</div>
+            <div class="ap-card-title">Kubernetes</div>
+            <p>One-command deploy on minikube. Init containers run migrations automatically.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── Big section: THE WALL ────────────────────────────────────────── -->
-    <section class="wall-intro" id="wall">
-      <div class="wi-inner">
-        <div class="wi-left">
-          <div class="wi-eyebrow">Community Board</div>
-          <h2 class="wi-heading">THE<br>WALL</h2>
-          <div class="wi-circles" aria-hidden="true">
-            <div class="wi-circle"></div>
-            <div class="wi-circle wi-circle-sm"></div>
-          </div>
+    <!-- ── Stats ──────────────────────────────────────────────────────────── -->
+    <section class="stats-section">
+      <div class="stats-inner">
+        <div class="big-stat">
+          <div class="bs-num">100 000+</div>
+          <div class="bs-label">possible posts</div>
         </div>
-        <div class="wi-right">
-          <p class="wi-desc">
-            Bold posts, clear commentary, dependable history.
-            Everything your shift deserves documented.
-          </p>
+        <div class="stats-divider"></div>
+        <div class="big-stat">
+          <div class="bs-num">5 services</div>
+          <div class="bs-label">running on K8s</div>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="big-stat">
+          <div class="bs-num">24 / 7</div>
+          <div class="bs-label">live & monitored</div>
+        </div>
+      </div>
+    </section>
 
-          <!-- New post form -->
-          <div class="post-form-block">
-            <div class="pfb-head">
-              <span class="pfb-title">New post</span>
+    <!-- ── Post form / Join ───────────────────────────────────────────────── -->
+    <section class="join-section" id="wall">
+      <div class="js-inner">
+        <div class="js-head">
+          <span class="js-pill">post to the wall</span>
+          <h2 class="js-heading">Share your first note.<br>It's <span class="js-accent">free</span>.</h2>
+        </div>
+        <div class="js-form-wrap">
+          <div class="post-form-card">
+            <div class="pfc-tabs">
               <div class="type-tabs">
                 <button class="type-tab active" data-type="text">Text</button>
                 <button class="type-tab" data-type="link">Link</button>
                 <button class="type-tab" data-type="photo">Photo</button>
               </div>
+              <select id="postType" style="display:none;">
+                <option value="text" selected>text</option>
+                <option value="link">link</option>
+                <option value="photo">photo</option>
+              </select>
             </div>
-            <select id="postType" style="display:none;">
-              <option value="text" selected>text</option>
-              <option value="link">link</option>
-              <option value="photo">photo</option>
-            </select>
             <div class="form-row">
               <div class="field">
                 <label>Your name <span class="opt">(optional)</span></label>
@@ -162,81 +240,50 @@
                 <label>Image URL</label>
                 <input class="input" id="postImage" placeholder="https://…jpg" />
               </div>
-              <button id="submitPost" class="btn-orange btn-full">Post to wall</button>
+              <button id="submitPost" class="btn-coral btn-full">Post to wall</button>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── Posts feed ───────────────────────────────────────────────────── -->
+    <!-- ── Wall feed ──────────────────────────────────────────────────────── -->
     <section class="feed-section">
-      <div class="fs-inner">
-        <div class="fs-head">
-          <h3 class="fs-title">Posts That Define<br>The Wall</h3>
+      <div class="feed-inner">
+        <div class="feed-head">
+          <h3 class="feed-heading">Recent posts</h3>
+          <span class="feed-pill">live</span>
         </div>
         <div id="feed" class="feed"></div>
         <div class="load-more-wrap">
-          <button id="loadMore" class="btn-outline-w" style="display:none;">Load more posts</button>
+          <button id="loadMore" class="btn-ghost-dark" style="display:none;">Load more posts</button>
         </div>
       </div>
     </section>
 
-    <!-- ── Library ──────────────────────────────────────────────────────── -->
+    <!-- ── Library ────────────────────────────────────────────────────────── -->
     <section class="library-section" id="library">
-      <div class="ls-inner">
-        <div class="ls-head">
-          <div class="ls-eyebrow">Curated Collection</div>
-          <h2 class="ls-heading">LIBRARY</h2>
-        </div>
-        <div class="ls-body">
+      <div class="lib-inner">
+        <div class="lib-head">
+          <span class="lib-pill">curated collection</span>
+          <h2 class="lib-heading">The Library</h2>
           <div class="library-tabs">
             <button class="lib-tab active" data-library="recipes">Recipes</button>
             <button class="lib-tab" data-library="places">Places</button>
             <button class="lib-tab" data-library="history">History</button>
           </div>
-          <div id="libraryOut" class="library-placeholder">
-            Select a category to browse the library.
-          </div>
+        </div>
+        <div id="libraryOut" class="library-placeholder">
+          Select a category to browse the library.
         </div>
       </div>
     </section>
 
-    <!-- ── Tech stack strip ─────────────────────────────────────────────── -->
-    <section class="stack-section">
-      <div class="ss-label">Trusted Stack</div>
-      <div class="ss-logos">
-        <span>FastAPI</span>
-        <span class="ss-dot"></span>
-        <span>PostgreSQL</span>
-        <span class="ss-dot"></span>
-        <span>Redis</span>
-        <span class="ss-dot"></span>
-        <span>Kubernetes</span>
-        <span class="ss-dot"></span>
-        <span>Prometheus</span>
-        <span class="ss-dot"></span>
-        <span>Grafana</span>
-        <span class="ss-dot"></span>
-        <span>Celery</span>
-        <span class="ss-dot"></span>
-        <span>OpenTelemetry</span>
-      </div>
-    </section>
-
-    <!-- ── CTA ──────────────────────────────────────────────────────────── -->
-    <section class="cta-section">
-      <div class="cta-inner">
-        <h2 class="cta-heading">Bring Your Voice to the Wall —<br>Join Bartender Journal Today</h2>
-        <button id="ctaRegister" class="btn-orange">Create account</button>
-      </div>
-    </section>
-
-    <!-- ── Footer ───────────────────────────────────────────────────────── -->
+    <!-- ── Footer ────────────────────────────────────────────────────────── -->
     <footer class="site-footer">
       <div class="footer-inner">
         <div class="footer-top">
-          <div class="footer-logo">bj</div>
+          <div class="footer-logo">bartender<br>journal</div>
           <div class="footer-nav">
             <div class="footer-col">
               <div class="footer-col-head">Navigate</div>
@@ -262,7 +309,7 @@
         </div>
         <div class="footer-bottom">
           <span>Bartender Journal &copy; 2026</span>
-          <span>DevOps Portfolio Project</span>
+          <span>A DevOps portfolio project</span>
         </div>
       </div>
     </footer>
@@ -290,7 +337,7 @@
             <label>Password</label>
             <input class="input" id="regPassword" type="password" />
           </div>
-          <button id="submitRegister" class="btn-orange btn-full">Create account</button>
+          <button id="submitRegister" class="btn-coral btn-full">Create account</button>
         </div>
       </div>
     </div>
@@ -311,7 +358,7 @@
             <label>Password</label>
             <input class="input" id="loginPassword" type="password" />
           </div>
-          <button id="submitLogin" class="btn-orange btn-full">Sign in</button>
+          <button id="submitLogin" class="btn-coral btn-full">Sign in</button>
         </div>
       </div>
     </div>
