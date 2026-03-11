@@ -490,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
     squareSize:    4,
     gridGap:       6,
     color:         "#0D1526",
-    maxOpacity:    0.15,
+    maxOpacity:    0.5,
     flickerChance: 0.3,
   });
 });
@@ -531,7 +531,7 @@ function initFlickeringGrid(containerId, opts = {}) {
 
   let cols, rows, squares, dpr;
   let rafId = null;
-  let isInView = false;
+  let isInView = true;   // assume in-view on init; IntersectionObserver overrides
   let lastTime = 0;
 
   function setup(w, h) {
@@ -598,14 +598,16 @@ function initFlickeringGrid(containerId, opts = {}) {
   }, { threshold: 0 });
   intersectObs.observe(canvas);
 
-  // Initial sizing
-  const w0 = container.clientWidth  || container.offsetWidth;
-  const h0 = container.clientHeight || container.offsetHeight;
-  if (w0 && h0) { setup(w0, h0); draw(); }
-
-  // Respect prefers-reduced-motion
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    stopLoop();
-    isInView = false;
-  }
+  // Defer initial setup to next frame so the hero has computed its dimensions
+  requestAnimationFrame(() => {
+    const w0 = container.clientWidth  || container.offsetWidth;
+    const h0 = container.clientHeight || container.offsetHeight;
+    if (w0 && h0) {
+      setup(w0, h0);
+      draw();
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        startLoop();
+      }
+    }
+  });
 }
