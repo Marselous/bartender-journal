@@ -38,3 +38,6 @@ htmlcov/
 __pycache__/
 *.pyc
 temporary-screenshots/
+
+# Claude Code
+.claude/
