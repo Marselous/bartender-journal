@@ -239,6 +239,70 @@ label {
   max-width: 1300px;
   margin: 0 auto;
   padding: 96px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hero content and visual above shapes */
+.hero-content,
+.hero-visual {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hero animated background shapes ────────────────────────────────────── */
+.hero-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Outer wrapper: handles drop-in with rotation */
+.shape-drop {
+  position: absolute;
+  animation: shapeDropIn 2.4s cubic-bezier(0.23, 0.86, 0.39, 0.96) both;
+  animation-delay: var(--shape-delay, 0s);
+}
+
+/* Inner wrapper: handles infinite float */
+.shape-float {
+  animation: shapeFloat 12s ease-in-out infinite;
+}
+
+/* Pill surface */
+.shape-pill {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+.shape-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.55), transparent 70%);
+}
+
+@keyframes shapeDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-150px) rotate(calc(var(--shape-rotate, 0deg) - 15deg));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--shape-rotate, 0deg));
+  }
+}
+
+@keyframes shapeFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(15px); }
 }
 .hero-pill {
   display: inline-flex;
