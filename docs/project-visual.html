@@ -1064,7 +1064,11 @@ ORDER BY created_at DESC, id DESC
         </div>
         <div class="rm-item">
           <div class="rm-num">3</div>
-          <div><strong>Frontend redesign</strong><br/><span style="color:var(--muted);font-size:12px;">Applied on update/plan-frontend — glassmorphism, hero, type badges, skeleton loaders.</span></div>
+          <div>
+            <strong>Frontend redesign</strong>
+            <span style="display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:rgba(74,222,128,0.18);border:1px solid rgba(74,222,128,0.4);color:var(--green);vertical-align:middle;">DONE</span>
+            <br/><span style="color:var(--muted);font-size:12px;">5 iterations — dark agency → light lifestyle → luxury editorial → canvas animation → SVG favicon.</span>
+          </div>
         </div>
       </div>
 
@@ -1107,6 +1111,58 @@ ORDER BY created_at DESC, id DESC
       </div>
     </div>
   </section>
+
+
+<!-- ── FRONTEND EVOLUTION ────────────────────────────────────────── -->
+<section style="padding: 80px 0 40px;">
+  <div class="container">
+    <div class="label reveal">Frontend Evolution</div>
+    <h2 class="reveal" style="font-size:clamp(26px,4vw,36px);font-weight:800;letter-spacing:-0.03em;margin-bottom:8px;">5 Iterations to Production UI</h2>
+    <p class="reveal" style="color:var(--muted);margin-bottom:48px;max-width:560px;">Each session built on the last — palette, structure, animation, and identity added incrementally.</p>
+
+    <div class="reveal" style="display:flex;gap:0;overflow-x:auto;padding-bottom:12px;">
+      <!-- Step 1 -->
+      <div style="flex:0 0 200px;position:relative;padding:24px 20px 24px 24px;">
+        <div style="position:absolute;top:38px;right:0;left:0;height:2px;background:linear-gradient(to right,rgba(255,204,102,0.4),rgba(106,170,255,0.4));z-index:0;"></div>
+        <div style="position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:rgba(255,204,102,0.18);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--gold);margin-bottom:16px;">1</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;">config/cl-frontend-type1</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Dark Agency</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Monolithic index.html, gold/black palette, editorial feel.</div>
+      </div>
+      <!-- Step 2 -->
+      <div style="flex:0 0 200px;position:relative;padding:24px 20px 24px 24px;">
+        <div style="position:absolute;top:38px;right:0;left:0;height:2px;background:linear-gradient(to right,rgba(106,170,255,0.4),rgba(192,132,252,0.4));z-index:0;"></div>
+        <div style="position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:rgba(106,170,255,0.18);border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--blue);margin-bottom:16px;">2</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;">config/cl-frontend-type2</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Light Lifestyle</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Fredoka font, coral accent <code style="font-size:11px;background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;">#E85A38</code>, warm neutrals.</div>
+      </div>
+      <!-- Step 3 -->
+      <div style="flex:0 0 200px;position:relative;padding:24px 20px 24px 24px;">
+        <div style="position:absolute;top:38px;right:0;left:0;height:2px;background:linear-gradient(to right,rgba(192,132,252,0.4),rgba(74,222,128,0.4));z-index:0;"></div>
+        <div style="position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:rgba(192,132,252,0.18);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--purple);margin-bottom:16px;">3</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;">config/cl-frontend-init</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Luxury Editorial</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">3-file split (index/style/app), glassmorphism plates, clamp() hero, type badges, avatar initials, skeleton loaders, settings drawer.</div>
+      </div>
+      <!-- Step 4 -->
+      <div style="flex:0 0 200px;position:relative;padding:24px 20px 24px 24px;">
+        <div style="position:absolute;top:38px;right:0;left:0;height:2px;background:linear-gradient(to right,rgba(74,222,128,0.4),rgba(251,146,60,0.4));z-index:0;"></div>
+        <div style="position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:rgba(74,222,128,0.18);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--green);margin-bottom:16px;">4</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;">feature/frontend-animation</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Canvas Layer</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Flickering-grid canvas hero — rAF loop, probabilistic flicker, reduced-motion guard.</div>
+      </div>
+      <!-- Step 5 -->
+      <div style="flex:0 0 200px;position:relative;padding:24px 20px 24px 0;">
+        <div style="position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:rgba(251,146,60,0.18);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--orange);margin-bottom:16px;">5</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;">feature/favicon</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Favicon</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">SVG favicon: dark <code style="font-size:11px;background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;">#0D1526</code> badge, coral martini glass, green olive garnish.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
 </div><!-- /container -->
 
