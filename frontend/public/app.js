@@ -153,7 +153,7 @@ async function loadLibrary(which) {
 /* ── Post card ───────────────────────────────────────────────────────────── */
 function postCard(p) {
   const article = document.createElement("article");
-  article.className = "glass post-card";
+  article.className = "post-card";
   article.dataset.postId = p.id;
 
   const author = p.author_name || "Guest";
@@ -206,7 +206,7 @@ function postCard(p) {
 /* ── Skeleton card ───────────────────────────────────────────────────────── */
 function skeletonCard() {
   const div = document.createElement("div");
-  div.className = "glass skeleton-card";
+  div.className = "skeleton-card";
   div.innerHTML = `
     <div class="skel-line h16"></div>
     <div class="skel-line h12"></div>
@@ -484,4 +484,130 @@ document.addEventListener("DOMContentLoaded", () => {
   updateUserBadge();
   updateLiveDot();
   if (state.apiBase && state.apiBase.startsWith("http")) loadFeed(true);
+
+  // Flickering grid hero background
+  initFlickeringGrid("heroGrid", {
+    squareSize:    4,
+    gridGap:       6,
+    color:         "#0D1526",
+    maxOpacity:    0.5,
+    flickerChance: 0.3,
+  });
 });
+
+/* ── Flickering grid (canvas) ─────────────────────────────────────────────
+ * Ported from FlickeringGrid React component (kokonut UI).
+ * Draws a grid of small squares that randomly flicker their opacity.
+ * Pauses automatically when off-screen (IntersectionObserver).
+ * Resizes to container via ResizeObserver.
+ * ───────────────────────────────────────────────────────────────────────── */
+function initFlickeringGrid(containerId, opts = {}) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const {
+    squareSize    = 4,
+    gridGap       = 6,
+    color         = "rgb(0,0,0)",
+    maxOpacity    = 0.3,
+    flickerChance = 0.3,
+  } = opts;
+
+  // Resolve color once into an "rgba(r,g,b," prefix
+  function toRGBAPrefix(cssColor) {
+    const tmp = document.createElement("canvas");
+    tmp.width = tmp.height = 1;
+    const ctx = tmp.getContext("2d");
+    ctx.fillStyle = cssColor;
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+    return `rgba(${r},${g},${b},`;
+  }
+  const rgbaPrefix = toRGBAPrefix(color);
+
+  const canvas = document.createElement("canvas");
+  container.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+
+  let cols, rows, squares, dpr;
+  let rafId = null;
+  let isInView = true;   // assume in-view on init; IntersectionObserver overrides
+  let lastTime = 0;
+
+  function setup(w, h) {
+    dpr    = window.devicePixelRatio || 1;
+    canvas.width        = w * dpr;
+    canvas.height       = h * dpr;
+    canvas.style.width  = w + "px";
+    canvas.style.height = h + "px";
+    cols = Math.floor(w / (squareSize + gridGap));
+    rows = Math.floor(h / (squareSize + gridGap));
+    squares = new Float32Array(cols * rows);
+    for (let i = 0; i < squares.length; i++) {
+      squares[i] = Math.random() * maxOpacity;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cell = (squareSize + gridGap) * dpr;
+    const sq   = squareSize * dpr;
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        ctx.fillStyle = rgbaPrefix + squares[i * rows + j] + ")";
+        ctx.fillRect(i * cell, j * cell, sq, sq);
+      }
+    }
+  }
+
+  function animate(time) {
+    if (!isInView) return;
+    const delta = lastTime ? (time - lastTime) / 1000 : 0;
+    lastTime = time;
+    for (let i = 0; i < squares.length; i++) {
+      if (Math.random() < flickerChance * delta) {
+        squares[i] = Math.random() * maxOpacity;
+      }
+    }
+    draw();
+    rafId = requestAnimationFrame(animate);
+  }
+
+  function startLoop() {
+    if (rafId) return;
+    lastTime = 0;
+    rafId = requestAnimationFrame(animate);
+  }
+
+  function stopLoop() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  // Size tracking
+  const resizeObs = new ResizeObserver(() => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w && h) { setup(w, h); draw(); }
+  });
+  resizeObs.observe(container);
+
+  // Pause when off-screen
+  const intersectObs = new IntersectionObserver(([entry]) => {
+    isInView = entry.isIntersecting;
+    if (isInView) startLoop(); else stopLoop();
+  }, { threshold: 0 });
+  intersectObs.observe(canvas);
+
+  // Defer initial setup to next frame so the hero has computed its dimensions
+  requestAnimationFrame(() => {
+    const w0 = container.clientWidth  || container.offsetWidth;
+    const h0 = container.clientHeight || container.offsetHeight;
+    if (w0 && h0) {
+      setup(w0, h0);
+      draw();
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        startLoop();
+      }
+    }
+  });
+}
